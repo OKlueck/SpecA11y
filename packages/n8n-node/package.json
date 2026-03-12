@@ -1,0 +1,41 @@
+{
+  "name": "n8n-nodes-speca11y",
+  "version": "0.1.0",
+  "description": "n8n node for automated WCAG accessibility checking",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "nodes": [
+      "dist/nodes/WcagCheck/WcagCheck.node.js"
+    ]
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@speca11y/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "^1.0.0",
+    "playwright": "^1.40.0"
+  },
+  "devDependencies": {
+    "n8n-workflow": "^1.72.0",
+    "playwright": "^1.50.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT"
+}
