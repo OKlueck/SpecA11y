@@ -118,7 +118,7 @@ SpecA11y covers all four WCAG principles plus forward-looking WCAG 3.0 draft rul
 | **Robust** | 16 | ARIA attributes, roles, required children/parents, dialog names |
 | **WCAG 3.0 Draft** | 3 | Text customization, reduced motion, deceptive patterns |
 
-See the [full rule reference](./docs/rules.md) for all rules with WCAG criteria mappings and tags.
+See the [full rule reference](./docs/rules.md) for all rules with WCAG criteria mappings and tags, or the [WCAG compliance map](./COMPLIANCE.md) for coverage by WCAG criterion.
 
 ## Key Features
 
