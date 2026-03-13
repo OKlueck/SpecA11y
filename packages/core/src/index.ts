@@ -85,6 +85,8 @@ import { pAsHeading } from './rules/perceivable/p-as-heading.js';
 import { tableFakeCaption } from './rules/perceivable/table-fake-caption.js';
 import { tdHasHeader } from './rules/perceivable/td-has-header.js';
 import { linkInTextBlock } from './rules/perceivable/link-in-text-block.js';
+import { imgAltQuality } from './rules/perceivable/img-alt-quality.js';
+import { videoCaptionQuality } from './rules/perceivable/video-caption-quality.js';
 // Operable
 import { documentTitle } from './rules/operable/document-title.js';
 import { linkName } from './rules/operable/link-name.js';
@@ -111,6 +113,8 @@ import { nestedInteractive } from './rules/operable/nested-interactive.js';
 import { skipLink } from './rules/operable/skip-link.js';
 import { scrollableRegionFocusable } from './rules/operable/scrollable-region-focusable.js';
 import { noEmptyLinks } from './rules/operable/no-empty-links.js';
+import { linkNameQuality } from './rules/operable/link-name-quality.js';
+import { focusVisibleContrast } from './rules/operable/focus-visible-contrast.js';
 // Understandable
 import { htmlHasLang } from './rules/understandable/html-has-lang.js';
 import { validLang } from './rules/understandable/valid-lang.js';
@@ -129,6 +133,8 @@ import { redundantEntry } from './rules/understandable/redundant-entry.js';
 import { accessibleAuth } from './rules/understandable/accessible-auth.js';
 import { labelTitleOnly } from './rules/understandable/label-title-only.js';
 import { labelContentNameMismatch } from './rules/understandable/label-content-name-mismatch.js';
+import { labelQuality } from './rules/understandable/label-quality.js';
+import { langMismatch } from './rules/understandable/lang-mismatch.js';
 // Robust
 import { ariaAllowedAttr } from './rules/robust/aria-allowed-attr.js';
 import { ariaRequiredAttr } from './rules/robust/aria-required-attr.js';
@@ -163,17 +169,20 @@ const builtinRules = [
   landmarkNoDuplicateBanner, landmarkNoDuplicateContentinfo,
   metaViewportLarge, region, cssOrientationLock, hiddenContent,
   pAsHeading, tableFakeCaption, tdHasHeader, linkInTextBlock,
+  imgAltQuality, videoCaptionQuality,
   // Operable
   documentTitle, linkName, bypass, frameTitle, tabindex, accesskeys,
   metaRefresh, marquee, blink, serverSideImageMap, focusVisible, targetSize,
   characterKeyShortcuts, timingAdjustable, focusOrder, multipleWays,
   focusNotObscured, focusAppearanceEnhanced, noKeyboardTrap, pointerCancellation, draggingMovements,
   nestedInteractive, skipLink, scrollableRegionFocusable, noEmptyLinks,
+  linkNameQuality, focusVisibleContrast,
   // Understandable
   htmlHasLang, validLang, label, selectName, buttonName, formFieldMultipleLabels,
   onFocus, consistentNavigation, consistentIdentification, consistentHelp,
   errorIdentification, errorSuggestion, errorPrevention, redundantEntry, accessibleAuth,
   labelTitleOnly, labelContentNameMismatch,
+  labelQuality, langMismatch,
   // Robust
   ariaAllowedAttr, ariaRequiredAttr, ariaValidAttr, ariaValidAttrValue, ariaRoles, ariaHiddenBody, duplicateId,
   ariaRequiredChildren, ariaRequiredParent, ariaInputFieldName, ariaToggleFieldName,

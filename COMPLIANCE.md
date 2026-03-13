@@ -111,6 +111,19 @@ These rules go beyond WCAG requirements but catch common accessibility issues:
 | `aria-treeitem-name` | Robust |
 | `presentation-role-conflict` | Robust |
 
+### Semantic Heuristic Rules
+
+These rules go beyond structural checks to evaluate **content quality** using heuristics:
+
+| Rule | WCAG | Description | Type |
+|:---|:---|:---|:---|
+| `img-alt-quality` | 1.1.1 | Detects generic, file-name-based, or suspiciously short/long alt text | dom |
+| `link-name-quality` | 2.4.4 | Detects generic link text like "click here", "more", "weiterlesen" | dom |
+| `label-quality` | 3.3.2 | Detects generic form labels like "field", "input", "Eingabe" | dom |
+| `lang-mismatch` | 3.1.1 | Detects mismatch between declared `lang` attribute and actual page content language | dom |
+| `focus-visible-contrast` | 2.4.7 | Checks that focus outline color has sufficient contrast against background | dom |
+| `video-caption-quality` | 1.2.2 | Checks that caption track files actually contain cues (not empty) | dom |
+
 ---
 
 ## WCAG 3.0 Draft (Experimental)
@@ -134,3 +147,5 @@ These rules go beyond WCAG requirements but catch common accessibility issues:
 | **Total** | **47/55** | **8** | **55** |
 
 The 8 criteria without automated checks all require manual human judgement (e.g., quality of audio descriptions, live captions, gesture alternatives, motion actuation). These cannot be reliably automated.
+
+Additionally, 6 **semantic heuristic rules** (112 total) now extend coverage by evaluating content quality for criteria that were previously only structurally checked (1.1.1, 1.2.2, 2.4.4, 2.4.7, 3.1.1, 3.3.2).
