@@ -27,7 +27,8 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@speca11y/core": "workspace:*"
+    "@speca11y/core": "workspace:*",
+    "@speca11y/semantic": "workspace:*"
   },
   "peerDependencies": {
     "n8n-workflow": "^1.0.0",

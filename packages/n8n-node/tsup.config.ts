@@ -9,5 +9,5 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ['n8n-workflow', 'playwright'],
+  external: ['n8n-workflow', 'playwright', '@anthropic-ai/sdk', 'openai'],
 });
