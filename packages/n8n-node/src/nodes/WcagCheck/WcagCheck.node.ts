@@ -82,6 +82,67 @@ export class WcagCheck implements INodeType {
         placeholder: 'color-contrast, img-alt',
         description: 'Comma-separated list of rule IDs to disable',
       },
+      // Semantic analysis options
+      {
+        displayName: 'Enable Semantic Analysis',
+        name: 'enableSemantic',
+        type: 'boolean',
+        default: false,
+        description: 'Whether to run LLM-based semantic quality analysis on flagged elements',
+      },
+      {
+        displayName: 'LLM Provider',
+        name: 'llmProvider',
+        type: 'options',
+        options: [
+          { name: 'Anthropic (Claude)', value: 'anthropic' },
+          { name: 'OpenAI', value: 'openai' },
+          { name: 'Ollama (Local)', value: 'ollama' },
+        ],
+        default: 'anthropic',
+        description: 'Which LLM provider to use for semantic analysis',
+        displayOptions: {
+          show: { enableSemantic: [true] },
+        },
+      },
+      {
+        displayName: 'LLM Model',
+        name: 'llmModel',
+        type: 'string',
+        default: '',
+        placeholder: 'Leave blank for default',
+        description: 'Model to use (leave blank for provider default)',
+        displayOptions: {
+          show: { enableSemantic: [true] },
+        },
+      },
+      {
+        displayName: 'API Key',
+        name: 'llmApiKey',
+        type: 'string',
+        typeOptions: { password: true },
+        default: '',
+        description: 'API key for the LLM provider',
+        displayOptions: {
+          show: {
+            enableSemantic: [true],
+            llmProvider: ['anthropic', 'openai'],
+          },
+        },
+      },
+      {
+        displayName: 'Ollama Base URL',
+        name: 'ollamaBaseUrl',
+        type: 'string',
+        default: 'http://localhost:11434',
+        description: 'Base URL for the Ollama server',
+        displayOptions: {
+          show: {
+            enableSemantic: [true],
+            llmProvider: ['ollama'],
+          },
+        },
+      },
     ],
   };
 
@@ -97,6 +158,7 @@ export class WcagCheck implements INodeType {
       const disableRules = disableRulesStr
         ? disableRulesStr.split(',').map(s => s.trim()).filter(Boolean)
         : undefined;
+      const enableSemantic = this.getNodeParameter('enableSemantic', i, false) as boolean;
 
       const { chromium } = await import('playwright');
       const browser = await chromium.launch({ headless: true });
@@ -118,7 +180,27 @@ export class WcagCheck implements INodeType {
           disableRules,
         });
 
-        returnData.push({ json: report as unknown as INodeExecutionData['json'] });
+        if (enableSemantic) {
+          const { enrich } = await import('@speca11y/semantic');
+          const llmProvider = this.getNodeParameter('llmProvider', i, 'anthropic') as string;
+          const llmModel = this.getNodeParameter('llmModel', i, '') as string;
+          const llmApiKey = this.getNodeParameter('llmApiKey', i, '') as string;
+          const ollamaBaseUrl = this.getNodeParameter('ollamaBaseUrl', i, 'http://localhost:11434') as string;
+
+          const enrichedReport = await enrich(report, {
+            provider: {
+              provider: llmProvider as 'anthropic' | 'openai' | 'ollama',
+              model: llmModel || undefined,
+              apiKey: llmApiKey || undefined,
+              baseUrl: llmProvider === 'ollama' ? ollamaBaseUrl : undefined,
+            },
+            page,
+          });
+
+          returnData.push({ json: enrichedReport as unknown as INodeExecutionData['json'] });
+        } else {
+          returnData.push({ json: report as unknown as INodeExecutionData['json'] });
+        }
       } finally {
         await browser.close();
       }
