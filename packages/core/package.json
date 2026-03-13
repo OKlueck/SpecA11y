@@ -1,6 +1,6 @@
 {
   "name": "@speca11y/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Automated WCAG accessibility checker powered by Playwright",
   "type": "module",
   "main": "./dist/index.cjs",
