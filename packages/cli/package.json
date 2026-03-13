@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@speca11y/core": "workspace:*",
+    "@speca11y/semantic": "workspace:*",
     "commander": "^13.0.0",
     "picocolors": "^1.1.0"
   },
