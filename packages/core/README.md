@@ -65,15 +65,15 @@ Rule registry management.
 
 Creates a rule execution context from a Playwright `Page`.
 
-## 106 Built-in Rules
+## 113 Built-in Rules
 
-- **46 Perceivable** — image alt text, color contrast, text spacing, reflow, landmarks, tables, lists, orientation, etc.
-- **25 Operable** — keyboard traps, focus indicators, target size, skip links, scrollable regions, etc.
-- **17 Understandable** — labels, language, error handling, consistent UI, label-content matching, etc.
+- **48 Perceivable** — image alt text, color contrast, text spacing, reflow, landmarks, tables, lists, orientation, etc.
+- **27 Operable** — keyboard traps, focus indicators, target size, skip links, scrollable regions, etc.
+- **19 Understandable** — labels, language, error handling, consistent UI, label-content matching, etc.
 - **16 Robust** — ARIA attributes, roles, required children/parents, dialog names, field names, etc.
 - **3 WCAG 3.0 Draft** — text customization, reduced motion, deceptive patterns
 
-See the [full rule list](../../README.md#rules-106) in the root README.
+See the [full rule reference](../../docs/rules.md) for all rules with WCAG criteria mappings.
 
 ## License
 

@@ -34,6 +34,24 @@ speca11y https://example.com --include-passes
 speca11y https://example.com --disable-rules color-contrast,img-alt
 ```
 
+### Semantic Analysis
+
+Enrich reports with LLM-powered quality assessment. Requires an LLM provider SDK and API key.
+
+```bash
+# With Anthropic Claude (default provider, uses ANTHROPIC_API_KEY env var)
+speca11y https://example.com --semantic --format json
+
+# With OpenAI (uses OPENAI_API_KEY env var)
+speca11y https://example.com --semantic --llm-provider openai
+
+# With local Ollama (no API key needed)
+speca11y https://example.com --semantic --llm-provider ollama
+
+# Custom model
+speca11y https://example.com --semantic --llm-provider openai --llm-model gpt-4o
+```
+
 ## Options
 
 | Flag | Description | Default |
@@ -43,6 +61,11 @@ speca11y https://example.com --disable-rules color-contrast,img-alt
 | `--include-passes` | Show passing rules | `false` |
 | `--disable-rules <ids>` | Comma-separated rule IDs to skip | — |
 | `-o, --output <file>` | Write to file instead of stdout | — |
+| `--semantic` | Enable LLM-based semantic quality analysis | `false` |
+| `--llm-provider <provider>` | LLM provider: `anthropic`, `openai`, or `ollama` | `anthropic` |
+| `--llm-model <model>` | Override the provider's default model | — |
+| `--llm-api-key <key>` | API key (or set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` env var) | — |
+| `--ollama-url <url>` | Ollama base URL | `http://localhost:11434` |
 
 ## Exit Codes
 
