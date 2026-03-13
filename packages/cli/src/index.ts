@@ -18,6 +18,12 @@ program
   .option('--include-passes', 'Include passing rules in output', false)
   .option('--disable-rules <ids>', 'Comma-separated rule IDs to disable')
   .option('-o, --output <file>', 'Write output to file instead of stdout')
+  // Semantic analysis options
+  .option('--semantic', 'Enable LLM-based semantic quality analysis', false)
+  .option('--llm-provider <provider>', 'LLM provider: anthropic, openai, or ollama', 'anthropic')
+  .option('--llm-model <model>', 'LLM model (leave blank for provider default)')
+  .option('--llm-api-key <key>', 'API key (or set ANTHROPIC_API_KEY / OPENAI_API_KEY env var)')
+  .option('--ollama-url <url>', 'Ollama base URL', 'http://localhost:11434')
   .action(async (target: string, options) => {
     const { check } = await import('@speca11y/core');
     const { chromium } = await import('playwright');
@@ -44,11 +50,36 @@ program
       const page = await browser.newPage();
       await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-      const report = await check(page, {
+      let report = await check(page, {
         level,
         includePasses,
         disableRules,
       });
+
+      // Run semantic enrichment if requested
+      if (options.semantic) {
+        const { enrich } = await import('@speca11y/semantic');
+        const provider = options.llmProvider as 'anthropic' | 'openai' | 'ollama';
+
+        process.stderr.write('Running semantic analysis...\n');
+
+        report = await enrich(report, {
+          provider: {
+            provider,
+            model: options.llmModel || undefined,
+            apiKey: options.llmApiKey || undefined,
+            baseUrl: provider === 'ollama' ? options.ollamaUrl : undefined,
+          },
+          page,
+        });
+
+        const semantic = (report as { semantic?: { enrichedCount: number; duration: number } }).semantic;
+        if (semantic) {
+          process.stderr.write(
+            `Semantic analysis complete: ${semantic.enrichedCount} elements assessed in ${semantic.duration}ms\n`,
+          );
+        }
+      }
 
       await page.close();
 

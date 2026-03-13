@@ -26,6 +26,7 @@ All results export as [SARIF 2.1.0](https://sarifweb.azurewebsites.net/) — rea
 | Package | Description |
 |---------|-------------|
 | [`@speca11y/core`](./packages/core) | Rule engine, 112 built-in rules, SARIF + JSON reporting |
+| [`@speca11y/semantic`](./packages/semantic) | LLM-powered semantic quality analysis (Anthropic, OpenAI, Ollama) |
 | [`@speca11y/cli`](./packages/cli) | Command-line interface with text, JSON, and SARIF output |
 | [`n8n-nodes-speca11y`](./packages/n8n-node) | n8n community node for workflow automation |
 
@@ -89,6 +90,37 @@ const report = await check(page, { level: 'AA' });
 const sarif = buildSarifReport(report);
 // Upload to GitHub Code Scanning, Azure DevOps, etc.
 ```
+
+### LLM Semantic Analysis
+
+Enrich reports with AI-powered content quality assessment using `@speca11y/semantic`:
+
+```bash
+# CLI — uses ANTHROPIC_API_KEY env var
+speca11y https://example.com --semantic --format json
+
+# With OpenAI
+speca11y https://example.com --semantic --llm-provider openai
+
+# With local Ollama (no API key needed)
+speca11y https://example.com --semantic --llm-provider ollama
+```
+
+```typescript
+import { check } from '@speca11y/core';
+import { enrich } from '@speca11y/semantic';
+
+const report = await check(page, { level: 'AA' });
+const enriched = await enrich(report, {
+  provider: { provider: 'anthropic' },
+  page, // optional — enables element screenshots for vision models
+});
+
+// Each flagged result now has a semantic annotation:
+// { verdict: 'good' | 'poor' | 'unclear', confidence, explanation, suggestion }
+```
+
+Supports **Anthropic Claude**, **OpenAI**, and **Ollama** (local). LLM SDKs are optional peer dependencies — install only what you need.
 
 ## Rules (112)
 
@@ -340,6 +372,7 @@ packages/
         robust/         # WCAG Principle 4 (16 rules)
         wcag3/          # WCAG 3.0 draft rules (3 rules)
       utils/            # Color, DOM, ARIA, CSS, visual, accname utilities
+  semantic/      # LLM-powered semantic quality analysis
   cli/           # Command-line interface
   n8n-node/      # n8n community node
 ```
