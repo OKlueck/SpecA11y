@@ -148,4 +148,6 @@ These rules go beyond structural checks to evaluate **content quality** using he
 
 The 8 criteria without automated checks all require manual human judgement (e.g., quality of audio descriptions, live captions, gesture alternatives, motion actuation). These cannot be reliably automated.
 
-Additionally, 6 **semantic heuristic rules** (112 total) now extend coverage by evaluating content quality for criteria that were previously only structurally checked (1.1.1, 1.2.2, 2.4.4, 2.4.7, 3.1.1, 3.3.2).
+Additionally, 6 **semantic heuristic rules** extend coverage by evaluating content quality for criteria that were previously only structurally checked (1.1.1, 1.2.2, 2.4.4, 2.4.7, 3.1.1, 3.3.2).
+
+For the full list of all 113 rules, see the [rule reference](./docs/rules.md). For LLM-powered enrichment of heuristic warnings, see [`@speca11y/semantic`](./packages/semantic).
