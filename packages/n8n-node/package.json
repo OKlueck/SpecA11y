@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-speca11y",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n node for automated WCAG accessibility checking",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -19,7 +19,9 @@
       "dist/nodes/WcagCheck/WcagCheck.node.js"
     ]
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "rm -rf dist .turbo"
