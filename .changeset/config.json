@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.3/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "OKlueck/SpecA11y" }],
+  "commit": false,
+  "fixed": [],
+  "linked": [["@speca11y/core", "@speca11y/cli"]],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
