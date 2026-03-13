@@ -1,5 +1,12 @@
 # @speca11y/cli
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`f2980ab`](https://github.com/OKlueck/SpecA11y/commit/f2980ab50a16dfdb071064f2514da55584a8f63d)]:
+  - @speca11y/semantic@0.2.0
+
 ## 0.2.0
 
 ### Minor Changes
