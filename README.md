@@ -1,6 +1,6 @@
 # SpecA11y
 
-Automated WCAG accessibility checker powered by [Playwright](https://playwright.dev). Runs 106 rules against live pages with real browser rendering — including visual checks via pixel-level screenshot analysis and interactive checks via keyboard simulation.
+Automated WCAG accessibility checker powered by [Playwright](https://playwright.dev). Runs 112 rules against live pages with real browser rendering — including visual checks via pixel-level screenshot analysis, interactive checks via keyboard simulation, and semantic heuristics for content quality.
 
 ## Why SpecA11y?
 
@@ -25,7 +25,7 @@ All results export as [SARIF 2.1.0](https://sarifweb.azurewebsites.net/) — rea
 
 | Package | Description |
 |---------|-------------|
-| [`@speca11y/core`](./packages/core) | Rule engine, 106 built-in rules, SARIF + JSON reporting |
+| [`@speca11y/core`](./packages/core) | Rule engine, 112 built-in rules, SARIF + JSON reporting |
 | [`@speca11y/cli`](./packages/cli) | Command-line interface with text, JSON, and SARIF output |
 | [`n8n-nodes-speca11y`](./packages/n8n-node) | n8n community node for workflow automation |
 
@@ -90,9 +90,9 @@ const sarif = buildSarifReport(report);
 // Upload to GitHub Code Scanning, Azure DevOps, etc.
 ```
 
-## Rules (106)
+## Rules (112)
 
-### Perceivable (46 rules)
+### Perceivable (48 rules)
 
 | Rule ID | Criterion | Type | Tags |
 |---------|-----------|------|------|
@@ -142,8 +142,10 @@ const sarif = buildSarifReport(report);
 | `content-on-hover-focus` | 1.4.13 | dom | |
 | `hidden-content` | — | dom | experimental |
 | `p-as-heading` | 1.3.1 | dom | experimental |
+| `img-alt-quality` | 1.1.1 | dom | semantic, heuristic |
+| `video-caption-quality` | 1.2.2 | dom | semantic, heuristic |
 
-### Operable (25 rules)
+### Operable (27 rules)
 
 | Rule ID | Criterion | Type | Tags |
 |---------|-----------|------|------|
@@ -172,8 +174,10 @@ const sarif = buildSarifReport(report);
 | `nested-interactive` | 4.1.2 | dom | |
 | `scrollable-region-focusable` | 2.1.1 | dom | best-practice |
 | `no-empty-links` | 2.4.4 | dom | best-practice |
+| `link-name-quality` | 2.4.4 | dom | semantic, heuristic |
+| `focus-visible-contrast` | 2.4.7 | dom | semantic, heuristic |
 
-### Understandable (17 rules)
+### Understandable (19 rules)
 
 | Rule ID | Criterion | Type | Tags |
 |---------|-----------|------|------|
@@ -194,6 +198,8 @@ const sarif = buildSarifReport(report);
 | `accessible-auth` | 3.3.8 | dom | |
 | `label-title-only` | — | dom | best-practice |
 | `label-content-name-mismatch` | 2.5.3 | dom | experimental |
+| `label-quality` | 3.3.2 | dom | semantic, heuristic |
+| `lang-mismatch` | 3.1.1 | dom | semantic, heuristic |
 
 ### Robust (16 rules)
 
@@ -239,6 +245,20 @@ Most accessibility tools only read the DOM. SpecA11y goes further — it drives 
 | Non-text contrast | Compares focus/unfocus screenshots for UI components | 1.4.11 |
 | Reduced motion | Emulates `prefers-reduced-motion`, verifies animations stop | WCAG 3.0 |
 
+### Semantic Heuristics
+Most tools only check if an alt text *exists* — SpecA11y also checks if it's *meaningful*. Six heuristic rules go beyond structural validation:
+
+| What | How | WCAG |
+|------|-----|------|
+| Alt text quality | Blacklist of generic terms ("image", "bild"), file name detection, length checks | 1.1.1 |
+| Link text quality | Detects vague link text ("click here", "mehr", "weiterlesen") | 2.4.4 |
+| Label quality | Detects generic form labels ("field", "input", "Eingabe") | 3.3.2 |
+| Language mismatch | Trigram-based detection (9 languages) vs. declared `lang` attribute | 3.1.1 |
+| Focus indicator contrast | Checks outline color contrast against background (min. 3:1) | 2.4.7 |
+| Caption file content | Verifies VTT/SRT files contain actual cues, not empty shells | 1.2.2 |
+
+These rules emit **warnings** (not violations), since heuristic detection is not 100% certain.
+
 ### Accurate Color Contrast
 Color contrast checks traverse the full parent chain and alpha-composite semi-transparent backgrounds — not just the element's own `background-color`. Reports `incomplete` when background images prevent reliable calculation.
 
@@ -261,6 +281,8 @@ DOM rules run in parallel with a shared caching layer that deduplicates identica
 
 - **`dom`** — Static analysis of the DOM. Rules run in parallel for speed.
 - **`interactive`** — Requires page interaction (screenshots, keyboard simulation, CSS injection). Rules run sequentially to avoid conflicts.
+
+Rules tagged `semantic, heuristic` use pattern matching and language detection to evaluate content quality beyond structural checks.
 
 ## Configuration
 
@@ -309,12 +331,12 @@ pnpm --filter @speca11y/core test
 
 ```
 packages/
-  core/          # Rule engine + 106 built-in rules
+  core/          # Rule engine + 112 built-in rules
     src/
       rules/
-        perceivable/    # WCAG Principle 1 (46 rules)
-        operable/       # WCAG Principle 2 (25 rules)
-        understandable/ # WCAG Principle 3 (17 rules)
+        perceivable/    # WCAG Principle 1 (48 rules)
+        operable/       # WCAG Principle 2 (27 rules)
+        understandable/ # WCAG Principle 3 (19 rules)
         robust/         # WCAG Principle 4 (16 rules)
         wcag3/          # WCAG 3.0 draft rules (3 rules)
       utils/            # Color, DOM, ARIA, CSS, visual, accname utilities
