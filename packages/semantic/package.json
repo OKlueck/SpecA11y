@@ -1,6 +1,6 @@
 {
   "name": "@speca11y/semantic",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "LLM-powered semantic quality analysis for SpecA11y accessibility reports",
   "type": "module",
   "main": "./dist/index.cjs",
