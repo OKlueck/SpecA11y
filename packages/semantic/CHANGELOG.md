@@ -1,5 +1,12 @@
 # @speca11y/semantic
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`3d2261f`](https://github.com/OKlueck/SpecA11y/commit/3d2261f27e1eec2fe27e72025db37e89e534b483)]:
+  - @speca11y/core@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
