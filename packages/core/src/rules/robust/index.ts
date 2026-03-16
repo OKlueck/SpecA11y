@@ -14,3 +14,5 @@ export { ariaDialogName } from './aria-dialog-name.js';
 export { ariaText } from './aria-text.js';
 export { ariaTreeitemName } from './aria-treeitem-name.js';
 export { presentationRoleConflict } from './presentation-role-conflict.js';
+export { ariaHiddenContent } from './aria-hidden-content.js';
+export { presentationRoleOnSemantic } from './presentation-role-on-semantic.js';

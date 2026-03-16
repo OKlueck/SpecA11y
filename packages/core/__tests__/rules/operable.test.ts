@@ -23,6 +23,11 @@ import { nestedInteractive } from '../../src/rules/operable/nested-interactive.j
 import { skipLink } from '../../src/rules/operable/skip-link.js';
 import { scrollableRegionFocusable } from '../../src/rules/operable/scrollable-region-focusable.js';
 import { noEmptyLinks } from '../../src/rules/operable/no-empty-links.js';
+import { tabindexRemovesFocusability } from '../../src/rules/operable/tabindex-removes-focusability.js';
+import { pointerInteractionBlocked } from '../../src/rules/operable/pointer-interaction-blocked.js';
+import { keyboardInputBlocked } from '../../src/rules/operable/keyboard-input-blocked.js';
+import { javascriptVoidLinks } from '../../src/rules/operable/javascript-void-links.js';
+import { scrollBlocked } from '../../src/rules/operable/scroll-blocked.js';
 
 let browser: Browser;
 let page: Page;
@@ -449,5 +454,149 @@ describe('no-empty-links', () => {
     await page.setContent('<a href="#"></a>');
     const results = await noEmptyLinks.run(createRuleContext(page));
     expect(results[0].type).toBe('violation');
+  });
+});
+
+// ── tabindex-removes-focusability ────────────────────────────────────
+
+describe('tabindex-removes-focusability', () => {
+  it('returns no results when no tabindex=-1 on native elements', async () => {
+    await page.setContent('<button>Click</button><a href="#">Link</a><input type="text">');
+    const results = await tabindexRemovesFocusability.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+
+  it('warns when a single native element has tabindex=-1', async () => {
+    await page.setContent('<button>OK</button><a href="#" tabindex="-1">Link</a><input type="text">');
+    const results = await tabindexRemovesFocusability.run(createRuleContext(page));
+    const warnings = results.filter(r => r.type === 'warning');
+    expect(warnings).toHaveLength(1);
+  });
+
+  it('violates when many native elements have tabindex=-1', async () => {
+    await page.setContent(`
+      <a href="#" tabindex="-1">Link 1</a>
+      <a href="#" tabindex="-1">Link 2</a>
+      <button tabindex="-1">Button</button>
+      <input type="text" tabindex="-1">
+    `);
+    const results = await tabindexRemovesFocusability.run(createRuleContext(page));
+    const violations = results.filter(r => r.type === 'violation');
+    expect(violations.length).toBeGreaterThan(0);
+  });
+
+  it('ignores tabindex=-1 inside composite widgets', async () => {
+    await page.setContent(`
+      <div role="tablist">
+        <button role="tab" tabindex="-1">Tab 1</button>
+        <button role="tab" tabindex="0">Tab 2</button>
+      </div>
+    `);
+    const results = await tabindexRemovesFocusability.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+});
+
+// ── pointer-interaction-blocked ──────────────────────────────────────
+
+describe('pointer-interaction-blocked', () => {
+  it('returns no results on normal pages', async () => {
+    await page.setContent('<main><button>Click me</button></main>');
+    const results = await pointerInteractionBlocked.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+
+  it('violates when pointer-events: none on content with interactive elements', async () => {
+    await page.setContent('<main style="pointer-events: none"><a href="#">Link</a></main>');
+    const results = await pointerInteractionBlocked.run(createRuleContext(page));
+    const violations = results.filter(r => r.type === 'violation');
+    expect(violations.length).toBeGreaterThan(0);
+  });
+
+  it('warns when cursor: none on content area', async () => {
+    await page.setContent('<body style="cursor: none"><p>Content</p></body>');
+    const results = await pointerInteractionBlocked.run(createRuleContext(page));
+    const warnings = results.filter(r => r.type === 'warning');
+    expect(warnings.length).toBeGreaterThan(0);
+  });
+});
+
+// ── keyboard-input-blocked ───────────────────────────────────────────
+
+describe('keyboard-input-blocked', () => {
+  it('passes on pages without keyboard blocking', async () => {
+    await page.setContent('<p>Normal content</p>');
+    const results = await keyboardInputBlocked.run(createRuleContext(page));
+    expect(results[0].type).toBe('pass');
+  });
+
+  it('violates when keydown preventDefault is active', async () => {
+    await page.setContent('<p>Content</p>');
+    await page.evaluate(() => {
+      document.addEventListener('keydown', (e) => e.preventDefault());
+    });
+    const results = await keyboardInputBlocked.run(createRuleContext(page));
+    expect(results[0].type).toBe('violation');
+  });
+});
+
+// ── javascript-void-links ─────────────────────────────────────────────
+
+describe('javascript-void-links', () => {
+  it('violates on javascript:void(0) links', async () => {
+    await page.setContent('<a href="javascript:void(0)">Click me</a>');
+    const results = await javascriptVoidLinks.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].message).toContain('javascript:');
+  });
+
+  it('violates on javascript: links', async () => {
+    await page.setContent('<a href="javascript:">Click me</a>');
+    const results = await javascriptVoidLinks.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(1);
+  });
+
+  it('warns on href="#" without role="button"', async () => {
+    await page.setContent('<a href="#">Click me</a>');
+    const results = await javascriptVoidLinks.run(createRuleContext(page));
+    const warnings = results.filter((r) => r.type === 'warning');
+    expect(warnings).toHaveLength(1);
+  });
+
+  it('passes on href="#" with role="button"', async () => {
+    await page.setContent('<a href="#" role="button">Click me</a>');
+    const results = await javascriptVoidLinks.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+
+  it('returns no results for normal links', async () => {
+    await page.setContent('<a href="/about">About</a>');
+    const results = await javascriptVoidLinks.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+});
+
+// ── scroll-blocked ────────────────────────────────────────────────────
+
+describe('scroll-blocked', () => {
+  it('passes when page scrolls normally', async () => {
+    await page.setContent('<div style="height: 5000px;">Tall content</div>');
+    const results = await scrollBlocked.run(createRuleContext(page));
+    expect(results[0].type).toBe('pass');
+  });
+
+  it('violates when body has overflow:hidden with overflowing content', async () => {
+    await page.setContent('<style>body { overflow: hidden; }</style><div style="height: 5000px;">Tall content</div>');
+    const results = await scrollBlocked.run(createRuleContext(page));
+    expect(results[0].type).toBe('violation');
+    expect(results[0].message).toContain('overflow');
+  });
+
+  it('passes when overflow:hidden but no overflowing content', async () => {
+    await page.setContent('<style>body { overflow: hidden; }</style><p>Short content</p>');
+    const results = await scrollBlocked.run(createRuleContext(page));
+    expect(results[0].type).toBe('pass');
   });
 });

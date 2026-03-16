@@ -68,4 +68,41 @@ describe('check()', () => {
 
     await page.close();
   });
+
+  it('detects deceptive accessibility tricks', async () => {
+    const page = await loadFixture('deceptive-page.html');
+    const report = await check(page);
+
+    expect(report.summary.counts.violations).toBeGreaterThan(0);
+
+    const ruleIds = report.entries.map(e => e.rule.id);
+    // Should detect aria-hidden on content wrapper
+    expect(ruleIds).toContain('aria-hidden-content');
+    // Should detect CSS tricks making content invisible
+    expect(ruleIds).toContain('css-content-visibility');
+    // Should detect tabindex=-1 removing focusability
+    expect(ruleIds).toContain('tabindex-removes-focusability');
+    // Should detect hidden attribute override
+    expect(ruleIds).toContain('hidden-attribute-override');
+    // Should detect keyboard input blocking
+    expect(ruleIds).toContain('keyboard-input-blocked');
+    // Should detect javascript: void links
+    expect(ruleIds).toContain('javascript-void-links');
+    // Should detect presentation role on semantic elements
+    expect(ruleIds).toContain('presentation-role-on-semantic');
+    // Should detect scroll blocking
+    expect(ruleIds).toContain('scroll-blocked');
+
+    // Verify the specific violations are reported
+    const violationRuleIds = report.entries
+      .filter(e => e.results.some(r => r.type === 'violation'))
+      .map(e => e.rule.id);
+    expect(violationRuleIds).toContain('aria-hidden-content');
+    expect(violationRuleIds).toContain('keyboard-input-blocked');
+    expect(violationRuleIds).toContain('javascript-void-links');
+    expect(violationRuleIds).toContain('presentation-role-on-semantic');
+    expect(violationRuleIds).toContain('scroll-blocked');
+
+    await page.close();
+  });
 });

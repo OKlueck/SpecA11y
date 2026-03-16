@@ -21,6 +21,12 @@ const GENERIC_ALT_PATTERNS: RegExp[] = [
   /^\*$/,
   /^\.$/,
   /^\s+$/,
+  // Prefixed variants: "image of...", "Bild von...", "Photo of..."
+  /^(image|img|picture|photo|foto|bild|grafik|graphic)\s+(of|von|de|di)\s+/i,
+  // Sequential names: "image1", "bild-2", "foto_03"
+  /^(image|img|picture|photo|foto|bild|grafik|graphic|pic)[-_]?\d+$/i,
+  // "Image of" without further description
+  /^(image|picture|photo|foto|bild)\s*$/i,
 ];
 
 /** Matches file-name-like patterns: image.png, IMG_1234.jpg, DSC_0001.JPEG, hero-bg.webp */

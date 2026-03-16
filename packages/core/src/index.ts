@@ -87,6 +87,10 @@ import { tdHasHeader } from './rules/perceivable/td-has-header.js';
 import { linkInTextBlock } from './rules/perceivable/link-in-text-block.js';
 import { imgAltQuality } from './rules/perceivable/img-alt-quality.js';
 import { videoCaptionQuality } from './rules/perceivable/video-caption-quality.js';
+import { cssContentVisibility } from './rules/perceivable/css-content-visibility.js';
+import { hiddenAttributeOverride } from './rules/perceivable/hidden-attribute-override.js';
+import { transparentContent } from './rules/perceivable/transparent-content.js';
+import { cssTextDistortion } from './rules/perceivable/css-text-distortion.js';
 // Operable
 import { documentTitle } from './rules/operable/document-title.js';
 import { linkName } from './rules/operable/link-name.js';
@@ -115,6 +119,11 @@ import { scrollableRegionFocusable } from './rules/operable/scrollable-region-fo
 import { noEmptyLinks } from './rules/operable/no-empty-links.js';
 import { linkNameQuality } from './rules/operable/link-name-quality.js';
 import { focusVisibleContrast } from './rules/operable/focus-visible-contrast.js';
+import { tabindexRemovesFocusability } from './rules/operable/tabindex-removes-focusability.js';
+import { pointerInteractionBlocked } from './rules/operable/pointer-interaction-blocked.js';
+import { keyboardInputBlocked } from './rules/operable/keyboard-input-blocked.js';
+import { javascriptVoidLinks } from './rules/operable/javascript-void-links.js';
+import { scrollBlocked } from './rules/operable/scroll-blocked.js';
 // Understandable
 import { htmlHasLang } from './rules/understandable/html-has-lang.js';
 import { validLang } from './rules/understandable/valid-lang.js';
@@ -152,6 +161,8 @@ import { ariaDialogName } from './rules/robust/aria-dialog-name.js';
 import { ariaText } from './rules/robust/aria-text.js';
 import { ariaTreeitemName } from './rules/robust/aria-treeitem-name.js';
 import { presentationRoleConflict } from './rules/robust/presentation-role-conflict.js';
+import { ariaHiddenContent } from './rules/robust/aria-hidden-content.js';
+import { presentationRoleOnSemantic } from './rules/robust/presentation-role-on-semantic.js';
 // WCAG 3.0 Draft
 import { textCustomization } from './rules/wcag3/text-customization.js';
 import { reducedMotionRespect } from './rules/wcag3/reduced-motion-respect.js';
@@ -170,6 +181,7 @@ const builtinRules = [
   metaViewportLarge, region, cssOrientationLock, hiddenContent,
   pAsHeading, tableFakeCaption, tdHasHeader, linkInTextBlock,
   imgAltQuality, videoCaptionQuality,
+  cssContentVisibility, hiddenAttributeOverride, transparentContent, cssTextDistortion,
   // Operable
   documentTitle, linkName, bypass, frameTitle, tabindex, accesskeys,
   metaRefresh, marquee, blink, serverSideImageMap, focusVisible, targetSize,
@@ -177,6 +189,8 @@ const builtinRules = [
   focusNotObscured, focusAppearanceEnhanced, noKeyboardTrap, pointerCancellation, draggingMovements,
   nestedInteractive, skipLink, scrollableRegionFocusable, noEmptyLinks,
   linkNameQuality, focusVisibleContrast,
+  tabindexRemovesFocusability, pointerInteractionBlocked, keyboardInputBlocked,
+  javascriptVoidLinks, scrollBlocked,
   // Understandable
   htmlHasLang, validLang, label, selectName, buttonName, formFieldMultipleLabels,
   onFocus, consistentNavigation, consistentIdentification, consistentHelp,
@@ -187,6 +201,7 @@ const builtinRules = [
   ariaAllowedAttr, ariaRequiredAttr, ariaValidAttr, ariaValidAttrValue, ariaRoles, ariaHiddenBody, duplicateId,
   ariaRequiredChildren, ariaRequiredParent, ariaInputFieldName, ariaToggleFieldName,
   ariaAllowedRole, ariaDialogName, ariaText, ariaTreeitemName, presentationRoleConflict,
+  ariaHiddenContent, presentationRoleOnSemantic,
   // WCAG 3.0 Draft
   textCustomization, reducedMotionRespect, cognitiveLoadDeceptive,
 ];

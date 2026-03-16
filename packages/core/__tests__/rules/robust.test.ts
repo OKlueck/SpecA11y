@@ -17,6 +17,8 @@ import { ariaDialogName } from '../../src/rules/robust/aria-dialog-name.js';
 import { ariaText } from '../../src/rules/robust/aria-text.js';
 import { ariaTreeitemName } from '../../src/rules/robust/aria-treeitem-name.js';
 import { presentationRoleConflict } from '../../src/rules/robust/presentation-role-conflict.js';
+import { ariaHiddenContent } from '../../src/rules/robust/aria-hidden-content.js';
+import { presentationRoleOnSemantic } from '../../src/rules/robust/presentation-role-on-semantic.js';
 
 let browser: Browser;
 let page: Page;
@@ -329,5 +331,80 @@ describe('presentation-role-conflict', () => {
     await page.setContent('<img role="presentation" aria-label="test" src="x.png">');
     const results = await presentationRoleConflict.run(createRuleContext(page));
     expect(results[0].type).toBe('violation');
+  });
+});
+
+// ── aria-hidden-content ──────────────────────────────────────────────
+
+describe('aria-hidden-content', () => {
+  it('passes when aria-hidden hides decorative content', async () => {
+    await page.setContent('<div aria-hidden="true">★</div><p>Real content</p>');
+    const results = await ariaHiddenContent.run(createRuleContext(page));
+    expect(results[0].type).toBe('pass');
+  });
+
+  it('violates when aria-hidden hides significant text content', async () => {
+    await page.setContent('<div aria-hidden="true"><p>This is a paragraph with significant text content that users need to read.</p></div>');
+    const results = await ariaHiddenContent.run(createRuleContext(page));
+    expect(results[0].type).toBe('violation');
+  });
+
+  it('violates when aria-hidden hides interactive elements', async () => {
+    await page.setContent('<div aria-hidden="true"><button>Click me</button></div>');
+    const results = await ariaHiddenContent.run(createRuleContext(page));
+    expect(results[0].type).toBe('violation');
+  });
+
+  it('violates when aria-hidden hides images', async () => {
+    await page.setContent('<div aria-hidden="true"><img src="photo.jpg" alt="A photo"></div>');
+    const results = await ariaHiddenContent.run(createRuleContext(page));
+    expect(results[0].type).toBe('violation');
+  });
+
+  it('returns no results when no aria-hidden elements exist', async () => {
+    await page.setContent('<p>Normal content</p>');
+    const results = await ariaHiddenContent.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+});
+
+// ── presentation-role-on-semantic ─────────────────────────────────────
+
+describe('presentation-role-on-semantic', () => {
+  it('violates when h1 has role="presentation"', async () => {
+    await page.setContent('<h1 role="presentation">Important heading</h1>');
+    const results = await presentationRoleOnSemantic.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].message).toContain('h1');
+  });
+
+  it('violates when nav has role="none"', async () => {
+    await page.setContent('<nav role="none"><a href="/">Home</a></nav>');
+    const results = await presentationRoleOnSemantic.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].message).toContain('nav');
+  });
+
+  it('violates when table has role="presentation"', async () => {
+    await page.setContent('<table role="presentation"><tr><td>Data</td></tr></table>');
+    const results = await presentationRoleOnSemantic.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].message).toContain('table');
+  });
+
+  it('passes when role="presentation" is on a non-semantic element', async () => {
+    await page.setContent('<div role="presentation">Content</div>');
+    const results = await presentationRoleOnSemantic.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('returns no results when no presentation roles exist', async () => {
+    await page.setContent('<h1>Normal heading</h1><nav><a href="/">Home</a></nav>');
+    const results = await presentationRoleOnSemantic.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
   });
 });

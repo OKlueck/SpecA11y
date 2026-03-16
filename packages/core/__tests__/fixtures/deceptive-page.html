@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Deceptive Test Page</title>
+  <style>
+    /* Override HTML hidden attribute */
+    [hidden] { display: block !important; }
+
+    /* Make all text nearly invisible via filter */
+    .content-wrapper { filter: opacity(0.03); }
+
+    /* Microscopic font-size */
+    .tiny-text { font-size: 1px; }
+
+    /* Disable pointer interaction */
+    .no-pointer { pointer-events: none; cursor: none; }
+
+    /* Suppress all focus indicators */
+    *:focus { outline: none !important; }
+
+    /* Transparent text */
+    .transparent-text { color: rgba(0, 0, 0, 0); }
+
+    /* Extreme text distortion */
+    .rotated-text { transform: rotate(180deg); }
+    .bidi-reversed { direction: rtl; unicode-bidi: bidi-override; }
+
+    /* Block scrolling */
+    html { overflow: hidden !important; }
+  </style>
+</head>
+<body>
+  <!-- aria-hidden on main content wrapper -->
+  <main aria-hidden="true" class="content-wrapper no-pointer">
+    <h1>Welcome to our accessible website</h1>
+    <p>This page has great content that everyone should be able to access.</p>
+    <img src="hero.jpg" alt="Hero image">
+
+    <!-- All interactive elements removed from tab order -->
+    <a href="#main" tabindex="-1">Skip to content</a>
+    <nav>
+      <a href="/" tabindex="-1">Home</a>
+      <a href="/about" tabindex="-1">About</a>
+      <a href="/contact" tabindex="-1">Contact</a>
+    </nav>
+
+    <form>
+      <label for="name">Name</label>
+      <input type="text" id="name" tabindex="-1">
+      <button type="submit" tabindex="-1">Submit</button>
+    </form>
+
+    <!-- Hidden attribute overridden by CSS -->
+    <div hidden>
+      <p>This content is semantically hidden but visually shown.</p>
+    </div>
+
+    <!-- Tiny text -->
+    <p class="tiny-text">Important legal information that nobody can read.</p>
+
+    <!-- Transparent text -->
+    <p class="transparent-text">This text is invisible because it's transparent.</p>
+
+    <!-- javascript: void links -->
+    <a href="javascript:void(0)">Fake link with javascript:void</a>
+    <a href="#">Hash-only link without role</a>
+
+    <!-- presentation role on semantic elements -->
+    <h2 role="presentation">This heading lost its semantics</h2>
+    <nav role="none"><a href="/hidden-nav">Hidden nav</a></nav>
+
+    <!-- Distorted text -->
+    <p class="rotated-text">This text is upside down and unreadable.</p>
+    <p class="bidi-reversed">This English text is displayed backwards.</p>
+
+    <!-- Extra content to make page overflow (for scroll-blocked test) -->
+    <div style="height: 5000px;"></div>
+  </main>
+
+  <script>
+    // Block all keyboard input
+    document.addEventListener('keydown', function(e) {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>

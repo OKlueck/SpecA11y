@@ -44,3 +44,7 @@ export { pAsHeading } from './p-as-heading.js';
 export { tableFakeCaption } from './table-fake-caption.js';
 export { tdHasHeader } from './td-has-header.js';
 export { linkInTextBlock } from './link-in-text-block.js';
+export { cssContentVisibility } from './css-content-visibility.js';
+export { hiddenAttributeOverride } from './hidden-attribute-override.js';
+export { transparentContent } from './transparent-content.js';
+export { cssTextDistortion } from './css-text-distortion.js';

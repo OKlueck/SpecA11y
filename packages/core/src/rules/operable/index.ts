@@ -23,3 +23,8 @@ export { nestedInteractive } from './nested-interactive.js';
 export { skipLink } from './skip-link.js';
 export { scrollableRegionFocusable } from './scrollable-region-focusable.js';
 export { noEmptyLinks } from './no-empty-links.js';
+export { tabindexRemovesFocusability } from './tabindex-removes-focusability.js';
+export { pointerInteractionBlocked } from './pointer-interaction-blocked.js';
+export { keyboardInputBlocked } from './keyboard-input-blocked.js';
+export { javascriptVoidLinks } from './javascript-void-links.js';
+export { scrollBlocked } from './scroll-blocked.js';

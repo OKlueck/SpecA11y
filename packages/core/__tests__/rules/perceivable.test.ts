@@ -16,6 +16,8 @@ import { autocompleteValid } from '../../src/rules/perceivable/autocomplete-vali
 import { meaningfulSequence } from '../../src/rules/perceivable/meaningful-sequence.js';
 import { sensoryCharacteristics } from '../../src/rules/perceivable/sensory-characteristics.js';
 import { imagesOfText } from '../../src/rules/perceivable/images-of-text.js';
+import { cssContentVisibility } from '../../src/rules/perceivable/css-content-visibility.js';
+import { hiddenAttributeOverride } from '../../src/rules/perceivable/hidden-attribute-override.js';
 import { reflow } from '../../src/rules/perceivable/reflow.js';
 import { contentOnHoverFocus } from '../../src/rules/perceivable/content-on-hover-focus.js';
 import { landmarkMain } from '../../src/rules/perceivable/landmark-main.js';
@@ -44,6 +46,8 @@ import { pAsHeading } from '../../src/rules/perceivable/p-as-heading.js';
 import { tableFakeCaption } from '../../src/rules/perceivable/table-fake-caption.js';
 import { tdHasHeader } from '../../src/rules/perceivable/td-has-header.js';
 import { linkInTextBlock } from '../../src/rules/perceivable/link-in-text-block.js';
+import { transparentContent } from '../../src/rules/perceivable/transparent-content.js';
+import { cssTextDistortion } from '../../src/rules/perceivable/css-text-distortion.js';
 
 let browser: Browser;
 let page: Page;
@@ -924,5 +928,147 @@ describe('link-in-text-block', () => {
     await page.setContent('<p>Some text with <a href="#" style="text-decoration:none;border:none;font-weight:normal;outline:none">a link</a> inside.</p>');
     const results = await linkInTextBlock.run(createRuleContext(page));
     expect(results.some(r => r.type === 'violation')).toBe(true);
+  });
+});
+
+// ── css-content-visibility ───────────────────────────────────────────
+
+describe('css-content-visibility', () => {
+  it('returns no results for normal visible text', async () => {
+    await page.setContent('<p>Normal visible text</p>');
+    const results = await cssContentVisibility.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+
+  it('violates with filter opacity below threshold', async () => {
+    await page.setContent('<div style="filter: opacity(0.03)"><p>Nearly invisible text</p></div>');
+    const results = await cssContentVisibility.run(createRuleContext(page));
+    const violations = results.filter(r => r.type === 'violation');
+    expect(violations.length).toBeGreaterThan(0);
+  });
+
+  it('violates with CSS opacity below threshold', async () => {
+    await page.setContent('<p style="opacity: 0.02">Nearly invisible text</p>');
+    const results = await cssContentVisibility.run(createRuleContext(page));
+    const violations = results.filter(r => r.type === 'violation');
+    expect(violations.length).toBeGreaterThan(0);
+  });
+
+  it('violates with font-size below 4px', async () => {
+    await page.setContent('<p style="font-size: 1px">Microscopic text</p>');
+    const results = await cssContentVisibility.run(createRuleContext(page));
+    const violations = results.filter(r => r.type === 'violation');
+    expect(violations.length).toBeGreaterThan(0);
+  });
+
+  it('does not flag normal opacity values', async () => {
+    await page.setContent('<p style="opacity: 0.8">Slightly transparent but readable</p>');
+    const results = await cssContentVisibility.run(createRuleContext(page));
+    const violations = results.filter(r => r.type === 'violation');
+    expect(violations).toHaveLength(0);
+  });
+});
+
+// ── hidden-attribute-override ────────────────────────────────────────
+
+describe('hidden-attribute-override', () => {
+  it('passes when hidden element has display: none', async () => {
+    await page.setContent('<div hidden>Hidden content</div>');
+    const results = await hiddenAttributeOverride.run(createRuleContext(page));
+    expect(results[0].type).toBe('pass');
+  });
+
+  it('violates when CSS overrides hidden attribute', async () => {
+    await page.setContent('<style>[hidden] { display: block !important; }</style><div hidden>Visible despite hidden</div>');
+    const results = await hiddenAttributeOverride.run(createRuleContext(page));
+    expect(results[0].type).toBe('violation');
+  });
+
+  it('returns no results when no hidden elements exist', async () => {
+    await page.setContent('<p>Normal content</p>');
+    const results = await hiddenAttributeOverride.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+});
+
+// ── transparent-content ───────────────────────────────────────────────
+
+describe('transparent-content', () => {
+  it('passes when text has normal color', async () => {
+    await page.setContent('<p style="color: black;">Visible text</p>');
+    const results = await transparentContent.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('violates when text has color: transparent (rgba 0 alpha)', async () => {
+    await page.setContent('<p style="color: rgba(0,0,0,0);">Hidden text</p>');
+    const results = await transparentContent.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations.length).toBeGreaterThanOrEqual(1);
+    expect(violations[0].message).toContain('rgba');
+  });
+
+  it('violates when text has extremely negative letter-spacing', async () => {
+    await page.setContent('<p style="font-size: 16px; letter-spacing: -10px;">Crushed text</p>');
+    const results = await transparentContent.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations.length).toBeGreaterThanOrEqual(1);
+    expect(violations[0].message).toContain('letter-spacing');
+  });
+
+  it('violates when text has extremely negative word-spacing', async () => {
+    await page.setContent('<p style="font-size: 16px; word-spacing: -10px;">Crushed words</p>');
+    const results = await transparentContent.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations.length).toBeGreaterThanOrEqual(1);
+    expect(violations[0].message).toContain('word-spacing');
+  });
+
+  it('returns no results for empty elements', async () => {
+    await page.setContent('<p style="color: rgba(0,0,0,0);"></p>');
+    const results = await transparentContent.run(createRuleContext(page));
+    expect(results).toHaveLength(0);
+  });
+});
+
+// ── css-text-distortion ───────────────────────────────────────────────
+
+describe('css-text-distortion', () => {
+  it('passes when text has no distortion', async () => {
+    await page.setContent('<p>Normal text</p>');
+    const results = await cssTextDistortion.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('violates when text is rotated more than 45 degrees', async () => {
+    await page.setContent('<p style="transform: rotate(90deg);">Rotated text</p>');
+    const results = await cssTextDistortion.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations.length).toBeGreaterThanOrEqual(1);
+    expect(violations[0].message).toContain('rotation');
+  });
+
+  it('passes when text is rotated less than 45 degrees', async () => {
+    await page.setContent('<p style="transform: rotate(30deg);">Slightly rotated</p>');
+    const results = await cssTextDistortion.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(0);
+  });
+
+  it('violates when Latin text has rtl bidi-override', async () => {
+    await page.setContent('<p style="direction: rtl; unicode-bidi: bidi-override;">Hello World</p>');
+    const results = await cssTextDistortion.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations.length).toBeGreaterThanOrEqual(1);
+    expect(violations[0].message).toContain('bidi');
+  });
+
+  it('passes when rtl is used without bidi-override', async () => {
+    await page.setContent('<p style="direction: rtl;">Hello World</p>');
+    const results = await cssTextDistortion.run(createRuleContext(page));
+    const violations = results.filter((r) => r.type === 'violation');
+    expect(violations).toHaveLength(0);
   });
 });

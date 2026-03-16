@@ -33,6 +33,55 @@ export const colorContrast: Rule = {
       const fg = parseColor(fgColor);
       if (!fg) continue;
 
+      // Check for CSS filter/opacity that reduces visibility below the computed color
+      const effectiveOpacity: number = await context.page.locator(el.selector).evaluate((node) => {
+        let opacity = 1;
+        let current: Element | null = node;
+        while (current) {
+          const cs = window.getComputedStyle(current);
+          opacity *= parseFloat(cs.opacity);
+          if (cs.filter && cs.filter !== 'none') {
+            const match = cs.filter.match(/opacity\(([^)]+)\)/);
+            if (match) {
+              const val = parseFloat(match[1]);
+              opacity *= match[1].includes('%') ? val / 100 : val;
+            }
+          }
+          current = current.parentElement;
+        }
+        return opacity;
+      });
+
+      if (effectiveOpacity < 0.3) {
+        results.push({
+          ruleId: 'color-contrast',
+          type: 'violation',
+          message: `Text has effective opacity of ${effectiveOpacity.toFixed(2)}, making it nearly invisible regardless of color contrast.`,
+          element: {
+            selector: el.selector,
+            html: await el.getOuterHTML(),
+            boundingBox: await el.getBoundingBox(),
+          },
+        });
+        continue;
+      }
+
+      // Check for unreasonably small font-size
+      const sizeCheck = parseFloat(fontSize);
+      if (sizeCheck < 4) {
+        results.push({
+          ruleId: 'color-contrast',
+          type: 'violation',
+          message: `Text has font-size of ${fontSize}, which is too small to be readable regardless of contrast ratio.`,
+          element: {
+            selector: el.selector,
+            html: await el.getOuterHTML(),
+            boundingBox: await el.getBoundingBox(),
+          },
+        });
+        continue;
+      }
+
       // Use page.locator().evaluate() to walk the DOM tree for effective background color.
       // getEffectiveBackgroundColor is self-contained and runs in the browser.
       const effectiveBg: string | null = await context.page.locator(el.selector).evaluate(
