@@ -1,5 +1,11 @@
 # @speca11y/core
 
+## 0.3.1
+
+### Patch Changes
+
+- [`8701e35`](https://github.com/OKlueck/SpecA11y/commit/8701e35ef05859be1b041998bf1ac6014a4a1b4d) - Fix transparent-content rule to detect filter: opacity() and CSS opacity property, and fix focus-visible rule to escalate to violation when most focusable elements have suppressed outlines
+
 ## 0.3.0
 
 ### Minor Changes
