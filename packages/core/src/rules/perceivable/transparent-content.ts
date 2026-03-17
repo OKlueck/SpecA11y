@@ -3,16 +3,16 @@ import type { Rule, RuleResult } from '../../types.js';
 const TEXT_CONTAINERS = 'p, span, a, li, td, th, label, h1, h2, h3, h4, h5, h6, button, div, main, section, article';
 
 interface TransparencyIssue {
-  type: 'transparent-color' | 'negative-letter-spacing' | 'negative-word-spacing';
+  type: 'transparent-color' | 'negative-letter-spacing' | 'negative-word-spacing' | 'low-opacity';
   detail: string;
 }
 
 export const transparentContent: Rule = {
   meta: {
     id: 'transparent-content',
-    name: 'Text must not be made invisible via transparent color or extreme spacing',
+    name: 'Text must not be made invisible via transparent color, low opacity, or extreme spacing',
     description:
-      'Detects text elements with color: transparent, rgba with alpha 0, or extremely negative letter-spacing/word-spacing that makes text unreadable.',
+      'Detects text elements with color: transparent, rgba with alpha 0, low effective opacity (CSS opacity or filter: opacity()), or extremely negative letter-spacing/word-spacing that makes text unreadable.',
     wcagCriteria: ['1.4.3'],
     severity: 'critical',
     confidence: 'certain',
@@ -78,6 +78,28 @@ export const transparentContent: Rule = {
               detail: `word-spacing: ${wordSpacing} (${(wsValue / fontSize).toFixed(2)}em relative to font-size)`,
             };
           }
+        }
+
+        // Check for low effective opacity (CSS opacity + filter: opacity())
+        let effectiveOpacity = 1;
+        let current: Element | null = node;
+        while (current) {
+          const ancestorCs = window.getComputedStyle(current);
+          effectiveOpacity *= parseFloat(ancestorCs.opacity);
+          if (ancestorCs.filter && ancestorCs.filter !== 'none') {
+            const opMatch = ancestorCs.filter.match(/opacity\(([^)]+)\)/);
+            if (opMatch) {
+              const val = parseFloat(opMatch[1]);
+              effectiveOpacity *= opMatch[1].includes('%') ? val / 100 : val;
+            }
+          }
+          current = current.parentElement;
+        }
+        if (effectiveOpacity < 0.3) {
+          return {
+            type: 'low-opacity' as const,
+            detail: `effective opacity: ${effectiveOpacity.toFixed(3)} (content nearly invisible)`,
+          };
         }
 
         return null;

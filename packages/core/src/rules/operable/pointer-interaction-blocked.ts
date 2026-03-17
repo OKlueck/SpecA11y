@@ -14,6 +14,8 @@ export const pointerInteractionBlocked: Rule = {
 
   async run(context): Promise<RuleResult[]> {
     const results: RuleResult[] = [];
+    let foundPointerBlock = false;
+    let foundCursorHide = false;
 
     // Check content containers for pointer-events: none
     const containers = await context.querySelectorAll('body, main, [role="main"], article, section, div');
@@ -25,7 +27,7 @@ export const pointerInteractionBlocked: Rule = {
       const pointerEvents = await el.getComputedStyle('pointer-events');
       const cursor = await el.getComputedStyle('cursor');
 
-      if (pointerEvents === 'none') {
+      if (!foundPointerBlock && pointerEvents === 'none') {
         // Verify this is a content container, not a decorative overlay
         const hasInteractive: boolean = await context.page.locator(el.selector).evaluate((node) => {
           return node.querySelectorAll('a[href], button, input, select, textarea').length > 0;
@@ -43,12 +45,11 @@ export const pointerInteractionBlocked: Rule = {
               boundingBox: await el.getBoundingBox(),
             },
           });
-          // Don't check children — parent already blocks all
-          break;
+          foundPointerBlock = true;
         }
       }
 
-      if (cursor === 'none') {
+      if (!foundCursorHide && cursor === 'none') {
         results.push({
           ruleId: 'pointer-interaction-blocked',
           type: 'warning',
@@ -59,8 +60,10 @@ export const pointerInteractionBlocked: Rule = {
             boundingBox: await el.getBoundingBox(),
           },
         });
-        break;
+        foundCursorHide = true;
       }
+
+      if (foundPointerBlock && foundCursorHide) break;
     }
 
     return results;

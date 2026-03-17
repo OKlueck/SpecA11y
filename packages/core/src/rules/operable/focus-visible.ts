@@ -13,6 +13,7 @@ export const focusVisible: Rule = {
 
   async run(context): Promise<RuleResult[]> {
     const results: RuleResult[] = [];
+    const suppressed: RuleResult[] = [];
     const selector = 'a[href], button, input, select, textarea, [tabindex]';
     const elements = await context.querySelectorAll(selector);
 
@@ -25,7 +26,7 @@ export const focusVisible: Rule = {
         outlineWidth === '0px';
 
       if (outlineSuppressed) {
-        results.push({
+        suppressed.push({
           ruleId: 'focus-visible',
           type: 'warning',
           message: 'Element has outline suppressed (outline: none or 0px). Ensure an alternative focus indicator is provided.',
@@ -47,6 +48,23 @@ export const focusVisible: Rule = {
           },
         });
       }
+    }
+
+    // Escalate to violation if majority of focusable elements have outline suppressed
+    const threshold = Math.max(3, Math.floor(elements.length * 0.5));
+    if (suppressed.length >= threshold) {
+      for (const result of suppressed) {
+        results.push({
+          ...result,
+          type: 'violation',
+          message:
+            `Element has outline suppressed (outline: none or 0px). ` +
+            `${suppressed.length} of ${elements.length} focusable elements have focus indicators removed, ` +
+            `indicating systematic suppression of focus visibility.`,
+        });
+      }
+    } else {
+      results.push(...suppressed);
     }
 
     return results;
