@@ -51,22 +51,14 @@ export const ariaRequiredAttr: Rule = {
           ruleId: 'aria-required-attr',
           type: 'violation',
           message: `Element with role="${roleName}" is missing required ARIA attribute(s): ${missingAttrs.join(', ')}.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-required-attr',
           type: 'pass',
           message: `Element with role="${roleName}" has all required ARIA attributes.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

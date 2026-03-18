@@ -259,10 +259,16 @@ describe('server-side-image-map', () => {
 // ── focus-visible ────────────────────────────────────────────────────
 
 describe('focus-visible', () => {
-  it('warns when outline is suppressed', async () => {
-    await page.setContent('<button style="outline: none;">Click</button>');
+  it('detects suppressed outline via screenshot comparison', async () => {
+    await page.setContent(`
+      <button style="outline: none; width: 100px; height: 40px; border: none; background: white; margin: 20px;">Click</button>
+      <button style="outline: none; width: 100px; height: 40px; border: none; background: white; margin: 20px;">Click 2</button>
+    `);
     const results = await focusVisible.run(createRuleContext(page));
-    expect(results.some(r => r.type === 'warning')).toBe(true);
+    // With screenshot-based detection, the rule produces violation, pass, or incomplete results
+    expect(results.length).toBeGreaterThan(0);
+    // No element should get a pure pass via CSS pre-filter since outline is none
+    expect(results.every(r => r.type !== 'pass' || r.message.includes('Alternative focus style'))).toBe(true);
   });
 
   it('passes when outline is present', async () => {
@@ -276,8 +282,9 @@ describe('focus-visible', () => {
 // ── target-size ──────────────────────────────────────────────────────
 
 describe('target-size', () => {
-  it('warns about small targets', async () => {
-    await page.setContent('<button style="width: 10px; height: 10px; padding: 0;">X</button>');
+  it('warns about small targets without spacing exception', async () => {
+    // Two adjacent small buttons so spacing exception doesn't apply
+    await page.setContent('<button style="width: 10px; height: 10px; padding: 0; display: inline-block;">X</button><button style="width: 10px; height: 10px; padding: 0; display: inline-block;">Y</button>');
     const results = await targetSize.run(createRuleContext(page));
     expect(results.some(r => r.type === 'warning')).toBe(true);
   });

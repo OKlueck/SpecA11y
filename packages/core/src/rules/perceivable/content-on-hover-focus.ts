@@ -45,11 +45,7 @@ export const contentOnHoverFocus: Rule = {
           ruleId: 'content-on-hover-focus',
           type: 'warning',
           message: `Non-interactive <${tag}> element has a title attribute ("${title.slice(0, 60)}${title.length > 60 ? '…' : ''}"). Native tooltips appear on hover only, cannot be dismissed by the user, and disappear when the pointer moves away. Consider using a more accessible pattern.`,
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       }
     }
@@ -134,10 +130,7 @@ export const contentOnHoverFocus: Rule = {
         ruleId: 'content-on-hover-focus',
         type: 'warning',
         message: `${pattern.issue} Hover-triggered content must also be available on focus, be dismissible, and be persistent.`,
-        element: {
-          selector: pattern.selector,
-          html: pattern.html,
-        },
+        element: { selector: pattern.selector, html: pattern.html },
       });
     }
 

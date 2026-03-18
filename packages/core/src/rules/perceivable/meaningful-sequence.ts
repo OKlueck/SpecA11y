@@ -83,10 +83,7 @@ export const meaningfulSequence: Rule = {
           ruleId: 'meaningful-sequence',
           type: 'warning',
           message: `Element with position:${el.position} may disrupt reading order. It appears at DOM position ${el.domIndex} but is visually at a different location. Review that the reading sequence remains meaningful.`,
-          element: {
-            selector: el.selector,
-            html: el.html,
-          },
+          element: { selector: el.selector, html: el.html },
         });
       }
     }

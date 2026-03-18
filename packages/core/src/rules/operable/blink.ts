@@ -20,11 +20,7 @@ export const blink: Rule = {
         ruleId: 'blink',
         type: 'violation',
         message: '<blink> element is deprecated and not accessible. Content must not blink without a mechanism to stop it.',
-        element: {
-          selector: el.selector,
-          html: await el.getOuterHTML(),
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
       });
     }
 

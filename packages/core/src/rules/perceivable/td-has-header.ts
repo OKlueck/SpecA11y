@@ -73,33 +73,21 @@ export const tdHasHeader: Rule = {
             ruleId: 'td-has-header',
             type: 'pass',
             message: 'Data cell has explicit headers attribute.',
-            element: {
-              selector: td.selector,
-              html: info.html,
-              boundingBox: await td.getBoundingBox(),
-            },
+            element: td.toTarget(info.html, await td.getBoundingBox()),
           });
         } else if (analysis.hasHeaders) {
           results.push({
             ruleId: 'td-has-header',
             type: 'pass',
             message: 'Data cell has associated header elements in the table.',
-            element: {
-              selector: td.selector,
-              html: info.html,
-              boundingBox: await td.getBoundingBox(),
-            },
+            element: td.toTarget(info.html, await td.getBoundingBox()),
           });
         } else {
           results.push({
             ruleId: 'td-has-header',
             type: 'violation',
             message: 'Data cell in a large table has no associated header. Add <th> elements or use the headers attribute.',
-            element: {
-              selector: td.selector,
-              html: info.html,
-              boundingBox: await td.getBoundingBox(),
-            },
+            element: td.toTarget(info.html, await td.getBoundingBox()),
           });
         }
       }

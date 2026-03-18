@@ -1,5 +1,5 @@
 import type { Page, Frame, Locator } from 'playwright';
-import type { RuleContext, ElementHandle } from './types.js';
+import type { RuleContext, ElementHandle, ElementTarget } from './types.js';
 import { computeAccessibleName } from './utils/accname.js';
 
 export interface ContextOptions {
@@ -7,7 +7,17 @@ export interface ContextOptions {
   exclude?: string[];
 }
 
+interface ElementDescription {
+  cssSelector: string;
+  accessibleName: string;
+  role: string;
+}
+
 class PlaywrightElementHandle implements ElementHandle {
+  public cssSelector?: string;
+  public accessibleName?: string;
+  public role?: string;
+
   constructor(
     private locator: Locator,
     public selector: string,
@@ -42,6 +52,115 @@ class PlaywrightElementHandle implements ElementHandle {
 
   async isVisible(): Promise<boolean> {
     return this.locator.isVisible();
+  }
+
+  toTarget(html: string, boundingBox?: { x: number; y: number; width: number; height: number } | null): ElementTarget {
+    return {
+      selector: this.selector,
+      cssSelector: this.cssSelector,
+      accessibleName: this.accessibleName,
+      role: this.role,
+      html,
+      boundingBox,
+    };
+  }
+}
+
+/**
+ * Batched enrichment: runs a single page.evaluate() to collect cssSelector,
+ * accessibleName, and role for all elements matching a CSS selector, then
+ * zips the results onto the handles array.
+ */
+async function batchEnrich(
+  pageOrFrame: Page | Frame,
+  selector: string,
+  handles: PlaywrightElementHandle[],
+): Promise<void> {
+  if (handles.length === 0) return;
+  try {
+    const descriptions: ElementDescription[] = await pageOrFrame.evaluate(
+      (sel: string) => {
+        // Inline describeElement logic to avoid serialization issues
+        function cssPath(node: Element): string {
+          const parts: string[] = [];
+          let current: Element | null = node;
+          for (let depth = 0; depth < 3 && current && current !== document.body && current !== document.documentElement; depth++) {
+            const tag = current.tagName.toLowerCase();
+            if (current.id) {
+              parts.unshift(tag + '#' + current.id);
+              break;
+            }
+            const cls = current.className && typeof current.className === 'string'
+              ? '.' + current.className.trim().split(/\s+/).slice(0, 2).join('.')
+              : '';
+            const parentEl: Element | null = current.parentElement;
+            let nth = '';
+            if (parentEl) {
+              const siblings = parentEl.children;
+              let sameTag = 0, idx = 0;
+              for (let i = 0; i < siblings.length; i++) {
+                if (siblings[i].tagName === current.tagName) {
+                  sameTag++;
+                  if (siblings[i] === current) idx = sameTag;
+                }
+              }
+              if (sameTag > 1) nth = ':nth-of-type(' + idx + ')';
+            }
+            parts.unshift(tag + cls + nth);
+            current = parentEl;
+          }
+          return parts.join(' > ');
+        }
+        function accName(node: Element): string {
+          const label = node.getAttribute('aria-label');
+          if (label) return label.trim().slice(0, 50);
+          const labelledBy = node.getAttribute('aria-labelledby');
+          if (labelledBy) {
+            const parts = labelledBy.split(/\s+/).map(id => {
+              const ref = document.getElementById(id);
+              return ref ? (ref.textContent || '').trim() : '';
+            }).filter(Boolean);
+            if (parts.length) return parts.join(' ').slice(0, 50);
+          }
+          const alt = node.getAttribute('alt');
+          if (alt) return alt.trim().slice(0, 50);
+          const title = node.getAttribute('title');
+          if (title) return title.trim().slice(0, 50);
+          let text = (node.textContent || '').trim().replace(/\s+/g, ' ');
+          if (text.length > 50) text = text.slice(0, 47) + '...';
+          return text;
+        }
+        const IMPLICIT_ROLES: Record<string, string> = {
+          a: 'link', button: 'button', input: 'textbox', select: 'combobox',
+          textarea: 'textbox', img: 'img', nav: 'navigation', main: 'main',
+          header: 'banner', footer: 'contentinfo', aside: 'complementary',
+          form: 'form', table: 'table', ul: 'list', ol: 'list', li: 'listitem',
+          h1: 'heading', h2: 'heading', h3: 'heading', h4: 'heading', h5: 'heading', h6: 'heading',
+          dialog: 'dialog', details: 'group', summary: 'button', article: 'article',
+          section: 'region', td: 'cell', th: 'columnheader', tr: 'row',
+        };
+
+        const elements = Array.from(document.querySelectorAll(sel));
+        const results: Array<{ cssSelector: string; accessibleName: string; role: string }> = [];
+        for (const el of elements) {
+          const tag = el.tagName.toLowerCase();
+          results.push({
+            cssSelector: cssPath(el),
+            accessibleName: accName(el),
+            role: el.getAttribute('role') || IMPLICIT_ROLES[tag] || '',
+          });
+        }
+        return results;
+      },
+      selector,
+    );
+    for (let i = 0; i < handles.length && i < descriptions.length; i++) {
+      handles[i].cssSelector = descriptions[i].cssSelector;
+      handles[i].accessibleName = descriptions[i].accessibleName;
+      handles[i].role = descriptions[i].role;
+    }
+  } catch {
+    // enrichment is best-effort
   }
 }
 
@@ -94,7 +213,12 @@ export function createRuleContext(pageOrFrame: Page | Frame, options?: ContextOp
 
       // No include selectors — query the full page/frame
       const locators = await pageOrFrame.locator(selector).all();
-      let handles: ElementHandle[] = locators.map((loc, i) => new PlaywrightElementHandle(loc, `${selector} >> nth=${i}`));
+      const pwHandles = locators.map((loc, i) => new PlaywrightElementHandle(loc, `${selector} >> nth=${i}`));
+
+      // Batch-enrich with cssSelector, accessibleName, role
+      await batchEnrich(pageOrFrame, selector, pwHandles);
+
+      let handles: ElementHandle[] = pwHandles;
 
       // Filter out excluded elements
       if (exclude.length > 0) {

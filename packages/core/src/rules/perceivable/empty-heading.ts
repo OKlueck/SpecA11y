@@ -36,22 +36,14 @@ export const emptyHeading: Rule = {
           type: 'violation',
           message:
             'Heading element has no discernible text. Add text content, aria-label, or aria-labelledby.',
-          element: {
-            selector: heading.selector,
-            html: outerHTML,
-            boundingBox: await heading.getBoundingBox(),
-          },
+          element: heading.toTarget(outerHTML, await heading.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'empty-heading',
           type: 'pass',
           message: 'Heading element has discernible text.',
-          element: {
-            selector: heading.selector,
-            html: outerHTML,
-            boundingBox: await heading.getBoundingBox(),
-          },
+          element: heading.toTarget(outerHTML, await heading.getBoundingBox()),
         });
       }
     }

@@ -24,11 +24,7 @@ export const noEmptyLinks: Rule = {
           ruleId: 'no-empty-links',
           type: 'pass',
           message: 'Link has discernible text.',
-          element: {
-            selector: link.selector,
-            html: await link.getOuterHTML(),
-            boundingBox: await link.getBoundingBox(),
-          },
+          element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
         });
       } else {
         // Check for child images with alt text
@@ -48,22 +44,14 @@ export const noEmptyLinks: Rule = {
             ruleId: 'no-empty-links',
             type: 'pass',
             message: 'Link has discernible text via child image alt text.',
-            element: {
-              selector: link.selector,
-              html: await link.getOuterHTML(),
-              boundingBox: await link.getBoundingBox(),
-            },
+            element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
           });
         } else {
           results.push({
             ruleId: 'no-empty-links',
             type: 'violation',
             message: 'Link has no discernible text. Add text content, aria-label, aria-labelledby, or alt text to child images.',
-            element: {
-              selector: link.selector,
-              html: await link.getOuterHTML(),
-              boundingBox: await link.getBoundingBox(),
-            },
+            element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
           });
         }
       }

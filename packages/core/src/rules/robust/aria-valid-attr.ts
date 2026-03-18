@@ -57,10 +57,7 @@ export const ariaValidAttr: Rule = {
             ruleId: 'aria-valid-attr',
             type: 'violation',
             message: `Invalid ARIA attribute "${attr}". This is not a recognized ARIA attribute.`,
-            element: {
-              selector: entry.selector,
-              html: entry.html,
-            },
+            element: { selector: entry.selector, html: entry.html },
           });
         }
       }

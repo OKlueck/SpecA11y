@@ -29,22 +29,14 @@ export const inputImageAlt: Rule = {
           ruleId: 'input-image-alt',
           type: 'pass',
           message: 'Image input has alternative text.',
-          element: {
-            selector: input.selector,
-            html: await input.getOuterHTML(),
-            boundingBox: await input.getBoundingBox(),
-          },
+          element: input.toTarget(await input.getOuterHTML(), await input.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'input-image-alt',
           type: 'violation',
           message: 'Image input is missing alternative text. Add an alt attribute or aria-label.',
-          element: {
-            selector: input.selector,
-            html: await input.getOuterHTML(),
-            boundingBox: await input.getBoundingBox(),
-          },
+          element: input.toTarget(await input.getOuterHTML(), await input.getBoundingBox()),
         });
       }
     }

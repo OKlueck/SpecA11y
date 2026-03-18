@@ -24,11 +24,7 @@ export const characterKeyShortcuts: Rule = {
           ruleId: 'character-key-shortcuts',
           type: 'warning',
           message: `Element has accesskey="${key}" which is a single character shortcut. Ensure the shortcut can be turned off, remapped, or is only active on focus (WCAG 2.1.4).`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }
@@ -62,10 +58,7 @@ export const characterKeyShortcuts: Rule = {
         ruleId: 'character-key-shortcuts',
         type: 'warning',
         message: `Element has inline "${entry.attr}" handler which may implement character key shortcuts. Ensure any single-character shortcuts can be turned off, remapped, or are only active on focus.`,
-        element: {
-          selector: entry.selector,
-          html: entry.html,
-        },
+        element: { selector: entry.selector, html: entry.html },
       });
     }
 

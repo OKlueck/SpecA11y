@@ -34,22 +34,14 @@ export const ariaRoles: Rule = {
           ruleId: 'aria-roles',
           type: 'violation',
           message: `Invalid ARIA role(s): ${invalidRoles.map(r => `"${r}"`).join(', ')}. Use valid non-abstract ARIA roles.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-roles',
           type: 'pass',
           message: 'Element has a valid ARIA role.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

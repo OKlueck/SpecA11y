@@ -44,11 +44,7 @@ export const landmarkNoDuplicateBanner: Rule = {
           ruleId: 'landmark-no-duplicate-banner',
           type: 'violation',
           message: `Page has ${bannerCount} banner landmarks. There should be at most one banner landmark per page.`,
-          element: {
-            selector: banner.selector,
-            html: outerHTML,
-            boundingBox: await banner.getBoundingBox(),
-          },
+          element: banner.toTarget(outerHTML, await banner.getBoundingBox()),
         });
       }
     } else {
@@ -62,11 +58,7 @@ export const landmarkNoDuplicateBanner: Rule = {
           ruleId: 'landmark-no-duplicate-banner',
           type: 'pass',
           message: 'Page has at most one banner landmark.',
-          element: {
-            selector: banner.selector,
-            html: outerHTML,
-            boundingBox: await banner.getBoundingBox(),
-          },
+          element: banner.toTarget(outerHTML, await banner.getBoundingBox()),
         });
       }
     }

@@ -41,11 +41,7 @@ export const tabindexRemovesFocusability: Rule = {
         ruleId: 'tabindex-removes-focusability',
         type: 'warning',
         message: 'Natively focusable element has tabindex="-1", removing it from the keyboard tab order.',
-        element: {
-          selector: el.selector,
-          html: await el.getOuterHTML(),
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
       });
     }
 

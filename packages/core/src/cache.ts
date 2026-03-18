@@ -1,5 +1,5 @@
 import type { Page, Frame } from 'playwright';
-import type { RuleContext, ElementHandle } from './types.js';
+import type { RuleContext, ElementHandle, ElementTarget } from './types.js';
 
 /**
  * Wraps an existing RuleContext and caches DOM query results.
@@ -93,6 +93,18 @@ class CachedElementHandle implements ElementHandle {
     return this.inner.selector;
   }
 
+  get cssSelector(): string | undefined {
+    return this.inner.cssSelector;
+  }
+
+  get accessibleName(): string | undefined {
+    return this.inner.accessibleName;
+  }
+
+  get role(): string | undefined {
+    return this.inner.role;
+  }
+
   constructor(private inner: ElementHandle) {}
 
   getOuterHTML(): Promise<string> {
@@ -146,5 +158,9 @@ class CachedElementHandle implements ElementHandle {
       this.visibleCache = this.inner.isVisible();
     }
     return this.visibleCache;
+  }
+
+  toTarget(html: string, boundingBox?: { x: number; y: number; width: number; height: number } | null): ElementTarget {
+    return this.inner.toTarget(html, boundingBox);
   }
 }

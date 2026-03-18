@@ -44,11 +44,7 @@ export const videoCaptionQuality: Rule = {
 
       if (trackInfos.length === 0) continue; // No tracks — caught by video-caption rule
 
-      const element = {
-        selector: video.selector,
-        html: await video.getOuterHTML(),
-        boundingBox: await video.getBoundingBox(),
-      };
+      const element = video.toTarget(await video.getOuterHTML(), await video.getBoundingBox());
 
       for (const track of trackInfos) {
         if (!track.src || track.src.trim() === '') {

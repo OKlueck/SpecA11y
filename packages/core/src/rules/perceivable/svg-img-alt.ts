@@ -33,22 +33,14 @@ export const svgImgAlt: Rule = {
           ruleId: 'svg-img-alt',
           type: 'pass',
           message: 'SVG element with role="img" has an accessible name.',
-          element: {
-            selector: svg.selector,
-            html: await svg.getOuterHTML(),
-            boundingBox: await svg.getBoundingBox(),
-          },
+          element: svg.toTarget(await svg.getOuterHTML(), await svg.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'svg-img-alt',
           type: 'violation',
           message: 'SVG element with role="img" is missing an accessible name. Add a <title> element, aria-label, or aria-labelledby.',
-          element: {
-            selector: svg.selector,
-            html: await svg.getOuterHTML(),
-            boundingBox: await svg.getBoundingBox(),
-          },
+          element: svg.toTarget(await svg.getOuterHTML(), await svg.getBoundingBox()),
         });
       }
     }

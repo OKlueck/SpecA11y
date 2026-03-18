@@ -23,10 +23,7 @@ export const metaRefresh: Rule = {
           ruleId: 'meta-refresh',
           type: 'pass',
           message: 'meta refresh has no content attribute.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML()),
         });
         continue;
       }
@@ -40,10 +37,7 @@ export const metaRefresh: Rule = {
           ruleId: 'meta-refresh',
           type: 'pass',
           message: 'meta refresh content could not be parsed.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML()),
         });
         continue;
       }
@@ -57,10 +51,7 @@ export const metaRefresh: Rule = {
           ruleId: 'meta-refresh',
           type: 'pass',
           message: 'meta refresh performs an instant redirect (delay is 0).',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML()),
         });
       } else if (delay > 0 && hasUrl) {
         // Delayed redirect is a violation
@@ -68,10 +59,7 @@ export const metaRefresh: Rule = {
           ruleId: 'meta-refresh',
           type: 'violation',
           message: `meta refresh redirects after a ${delay}-second delay. Timed redirects are not allowed.`,
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML()),
         });
       } else if (delay > 0) {
         // Timed page refresh without URL is also a violation
@@ -79,20 +67,14 @@ export const metaRefresh: Rule = {
           ruleId: 'meta-refresh',
           type: 'violation',
           message: `meta refresh reloads the page after ${delay} seconds. Timed refreshes are not allowed.`,
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML()),
         });
       } else {
         results.push({
           ruleId: 'meta-refresh',
           type: 'pass',
           message: 'meta refresh has no timed delay.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML()),
         });
       }
     }

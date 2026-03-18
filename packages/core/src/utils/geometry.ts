@@ -45,6 +45,13 @@ export function isOffscreen(rect: Rect, viewport: { width: number; height: numbe
   );
 }
 
+/** Shortest distance between edges of two rectangles (0 if overlapping). */
+export function edgeDistance(a: Rect, b: Rect): number {
+  const dx = Math.max(0, Math.max(a.x - (b.x + b.width), b.x - (a.x + a.width)));
+  const dy = Math.max(0, Math.max(a.y - (b.y + b.height), b.y - (a.y + a.height)));
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 export function distance(a: Rect, b: Rect): number {
   const ax = a.x + a.width / 2;
   const ay = a.y + a.height / 2;

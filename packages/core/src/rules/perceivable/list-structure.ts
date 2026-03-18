@@ -32,22 +32,14 @@ export const listStructure: Rule = {
           ruleId: 'list-structure',
           type: 'violation',
           message: `List contains invalid direct children: <${invalidChildren.join('>, <')}>. Only <li>, <script>, and <template> are allowed.`,
-          element: {
-            selector: list.selector,
-            html: await list.getOuterHTML(),
-            boundingBox: await list.getBoundingBox(),
-          },
+          element: list.toTarget(await list.getOuterHTML(), await list.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'list-structure',
           type: 'pass',
           message: 'List only contains allowed child elements.',
-          element: {
-            selector: list.selector,
-            html: await list.getOuterHTML(),
-            boundingBox: await list.getBoundingBox(),
-          },
+          element: list.toTarget(await list.getOuterHTML(), await list.getBoundingBox()),
         });
       }
     }

@@ -36,11 +36,7 @@ export const presentationRoleOnSemantic: Rule = {
           message:
             `<${tagName}> has role="${role}" which removes its semantic meaning. ` +
             `This element conveys important structural information that assistive technologies rely on.`,
-          element: {
-            selector: el.selector,
-            html,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(html, await el.getBoundingBox()),
         });
       }
     }

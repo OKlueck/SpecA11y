@@ -29,22 +29,14 @@ export const areaAlt: Rule = {
           ruleId: 'area-alt',
           type: 'pass',
           message: 'Area element has alternative text.',
-          element: {
-            selector: area.selector,
-            html: await area.getOuterHTML(),
-            boundingBox: await area.getBoundingBox(),
-          },
+          element: area.toTarget(await area.getOuterHTML(), await area.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'area-alt',
           type: 'violation',
           message: 'Area element in an image map is missing alternative text. Add an alt attribute or aria-label.',
-          element: {
-            selector: area.selector,
-            html: await area.getOuterHTML(),
-            boundingBox: await area.getBoundingBox(),
-          },
+          element: area.toTarget(await area.getOuterHTML(), await area.getBoundingBox()),
         });
       }
     }

@@ -33,22 +33,14 @@ export const ariaInputFieldName: Rule = {
           ruleId: 'aria-input-field-name',
           type: 'violation',
           message: `Element with role="${roleName}" does not have an accessible name. Add aria-label, aria-labelledby, or a visible label.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-input-field-name',
           type: 'pass',
           message: `Element with role="${roleName}" has an accessible name.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

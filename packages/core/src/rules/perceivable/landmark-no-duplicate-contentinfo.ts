@@ -47,11 +47,7 @@ export const landmarkNoDuplicateContentinfo: Rule = {
           ruleId: 'landmark-no-duplicate-contentinfo',
           type: 'violation',
           message: `Page has ${contentinfoCount} contentinfo landmarks. There should be at most one contentinfo landmark per page.`,
-          element: {
-            selector: footer.selector,
-            html: outerHTML,
-            boundingBox: await footer.getBoundingBox(),
-          },
+          element: footer.toTarget(outerHTML, await footer.getBoundingBox()),
         });
       }
     } else {
@@ -64,11 +60,7 @@ export const landmarkNoDuplicateContentinfo: Rule = {
           ruleId: 'landmark-no-duplicate-contentinfo',
           type: 'pass',
           message: 'Page has at most one contentinfo landmark.',
-          element: {
-            selector: footer.selector,
-            html: outerHTML,
-            boundingBox: await footer.getBoundingBox(),
-          },
+          element: footer.toTarget(outerHTML, await footer.getBoundingBox()),
         });
       }
     }

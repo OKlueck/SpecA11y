@@ -39,22 +39,14 @@ export const tableDuplicateName: Rule = {
           ruleId: 'table-duplicate-name',
           type: 'violation',
           message: 'Table has the same summary and caption text. Screen readers will read this text twice.',
-          element: {
-            selector: table.selector,
-            html: await table.getOuterHTML(),
-            boundingBox: await table.getBoundingBox(),
-          },
+          element: table.toTarget(await table.getOuterHTML(), await table.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'table-duplicate-name',
           type: 'pass',
           message: 'Table summary and caption text are different.',
-          element: {
-            selector: table.selector,
-            html: await table.getOuterHTML(),
-            boundingBox: await table.getBoundingBox(),
-          },
+          element: table.toTarget(await table.getOuterHTML(), await table.getBoundingBox()),
         });
       }
     }

@@ -43,11 +43,7 @@ export const tableFakeCaption: Rule = {
           ruleId: 'table-fake-caption',
           type: 'violation',
           message: `Table appears to use a spanning cell ("${info}") as a caption. Use a <caption> element instead for better accessibility.`,
-          element: {
-            selector: table.selector,
-            html: outerHTML.substring(0, 200),
-            boundingBox: await table.getBoundingBox(),
-          },
+          element: table.toTarget(outerHTML.substring(0, 200), await table.getBoundingBox()),
         });
       }
     }

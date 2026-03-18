@@ -34,22 +34,14 @@ export const emptyTableHeader: Rule = {
           type: 'violation',
           message:
             'Table header <th> has no discernible text. Add text content, aria-label, or aria-labelledby.',
-          element: {
-            selector: th.selector,
-            html: outerHTML,
-            boundingBox: await th.getBoundingBox(),
-          },
+          element: th.toTarget(outerHTML, await th.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'empty-table-header',
           type: 'pass',
           message: 'Table header <th> has discernible text.',
-          element: {
-            selector: th.selector,
-            html: outerHTML,
-            boundingBox: await th.getBoundingBox(),
-          },
+          element: th.toTarget(outerHTML, await th.getBoundingBox()),
         });
       }
     }

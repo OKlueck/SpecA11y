@@ -80,11 +80,7 @@ export const autocompleteValid: Rule = {
           ruleId: 'autocomplete-valid',
           type: 'violation',
           message: 'Autocomplete attribute is empty.',
-          element: {
-            selector: field.selector,
-            html: await field.getOuterHTML(),
-            boundingBox: await field.getBoundingBox(),
-          },
+          element: field.toTarget(await field.getOuterHTML(), await field.getBoundingBox()),
         });
         continue;
       }
@@ -111,22 +107,14 @@ export const autocompleteValid: Rule = {
           ruleId: 'autocomplete-valid',
           type: 'violation',
           message: `Autocomplete attribute contains invalid tokens: ${invalidTokens.join(', ')}.`,
-          element: {
-            selector: field.selector,
-            html: await field.getOuterHTML(),
-            boundingBox: await field.getBoundingBox(),
-          },
+          element: field.toTarget(await field.getOuterHTML(), await field.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'autocomplete-valid',
           type: 'pass',
           message: 'Autocomplete attribute has valid values.',
-          element: {
-            selector: field.selector,
-            html: await field.getOuterHTML(),
-            boundingBox: await field.getBoundingBox(),
-          },
+          element: field.toTarget(await field.getOuterHTML(), await field.getBoundingBox()),
         });
       }
     }

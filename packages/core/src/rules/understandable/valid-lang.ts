@@ -25,33 +25,21 @@ export const validLang: Rule = {
           ruleId: 'valid-lang',
           type: 'violation',
           message: 'Element has an empty lang attribute.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else if (!VALID_LANG_PATTERN.test(lang.trim())) {
         results.push({
           ruleId: 'valid-lang',
           type: 'violation',
           message: `Element has an invalid lang attribute value: "${lang}".`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'valid-lang',
           type: 'pass',
           message: `Element has a valid lang attribute: "${lang}".`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

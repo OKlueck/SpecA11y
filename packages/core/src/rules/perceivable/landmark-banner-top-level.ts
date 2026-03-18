@@ -27,22 +27,14 @@ export const landmarkBannerTopLevel: Rule = {
           ruleId: 'landmark-banner-top-level',
           type: 'violation',
           message: 'Banner landmark is nested inside another landmark. <header> or [role="banner"] must be a top-level landmark.',
-          element: {
-            selector: banner.selector,
-            html: outerHTML,
-            boundingBox: await banner.getBoundingBox(),
-          },
+          element: banner.toTarget(outerHTML, await banner.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'landmark-banner-top-level',
           type: 'pass',
           message: 'Banner landmark is at the top level.',
-          element: {
-            selector: banner.selector,
-            html: outerHTML,
-            boundingBox: await banner.getBoundingBox(),
-          },
+          element: banner.toTarget(outerHTML, await banner.getBoundingBox()),
         });
       }
     }

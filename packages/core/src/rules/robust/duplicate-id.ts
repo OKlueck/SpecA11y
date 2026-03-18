@@ -60,10 +60,7 @@ export const duplicateId: Rule = {
           ruleId: 'duplicate-id',
           type: 'violation',
           message: `Duplicate ID "${dup.id}" found (${dup.count} elements share this ID). IDs must be unique on the page.`,
-          element: {
-            selector: el.selector,
-            html: el.html,
-          },
+          element: { selector: el.selector, html: el.html },
         });
       }
     }

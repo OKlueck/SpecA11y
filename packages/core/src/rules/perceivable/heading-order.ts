@@ -29,22 +29,14 @@ export const headingOrder: Rule = {
           ruleId: 'heading-order',
           type: 'violation',
           message: `Heading level h${level} skips from h${previousLevel}. Heading levels should increase by one.`,
-          element: {
-            selector: heading.selector,
-            html: outerHTML,
-            boundingBox: await heading.getBoundingBox(),
-          },
+          element: heading.toTarget(outerHTML, await heading.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'heading-order',
           type: 'pass',
           message: `Heading level h${level} follows correct order.`,
-          element: {
-            selector: heading.selector,
-            html: outerHTML,
-            boundingBox: await heading.getBoundingBox(),
-          },
+          element: heading.toTarget(outerHTML, await heading.getBoundingBox()),
         });
       }
 

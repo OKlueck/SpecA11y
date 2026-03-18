@@ -61,22 +61,14 @@ export const thHasDataCells: Rule = {
           ruleId: 'th-has-data-cells',
           type: 'violation',
           message: 'Table header <th> has no associated data cells.',
-          element: {
-            selector: header.selector,
-            html: await header.getOuterHTML(),
-            boundingBox: await header.getBoundingBox(),
-          },
+          element: header.toTarget(await header.getOuterHTML(), await header.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'th-has-data-cells',
           type: 'pass',
           message: 'Table header has associated data cells.',
-          element: {
-            selector: header.selector,
-            html: await header.getOuterHTML(),
-            boundingBox: await header.getBoundingBox(),
-          },
+          element: header.toTarget(await header.getOuterHTML(), await header.getBoundingBox()),
         });
       }
     }

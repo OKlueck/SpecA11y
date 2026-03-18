@@ -65,22 +65,14 @@ export const imageRedundantAlt: Rule = {
           ruleId: 'image-redundant-alt',
           type: 'violation',
           message: `Image alt text "${alt}" is the same as the surrounding link or button text. Remove the redundant alt or differentiate it.`,
-          element: {
-            selector: img.selector,
-            html: outerHTML,
-            boundingBox: await img.getBoundingBox(),
-          },
+          element: img.toTarget(outerHTML, await img.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'image-redundant-alt',
           type: 'pass',
           message: 'Image alt text does not duplicate surrounding text.',
-          element: {
-            selector: img.selector,
-            html: outerHTML,
-            boundingBox: await img.getBoundingBox(),
-          },
+          element: img.toTarget(outerHTML, await img.getBoundingBox()),
         });
       }
     }

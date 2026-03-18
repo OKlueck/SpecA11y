@@ -36,22 +36,14 @@ export const ariaDialogName: Rule = {
           type: 'violation',
           message:
             'Dialog element must have an accessible name. Use aria-label or aria-labelledby to provide one.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-dialog-name',
           type: 'pass',
           message: 'Dialog element has an accessible name.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       }
     }

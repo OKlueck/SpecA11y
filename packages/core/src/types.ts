@@ -34,7 +34,10 @@ export interface RuleMeta {
 
 export interface ElementTarget {
   selector: string;
+  cssSelector?: string;
   html: string;
+  accessibleName?: string;
+  role?: string;
   boundingBox?: { x: number; y: number; width: number; height: number } | null;
 }
 
@@ -64,6 +67,9 @@ export interface RuleContext {
 
 export interface ElementHandle {
   selector: string;
+  cssSelector?: string;
+  accessibleName?: string;
+  role?: string;
   getOuterHTML(): Promise<string>;
   getAttribute(attr: string): Promise<string | null>;
   getComputedStyle(property: string): Promise<string>;
@@ -71,6 +77,8 @@ export interface ElementHandle {
   getBoundingBox(): Promise<{ x: number; y: number; width: number; height: number } | null>;
   getTextContent(): Promise<string>;
   isVisible(): Promise<boolean>;
+  /** Build an ElementTarget with enriched properties for use in RuleResult.element */
+  toTarget(html: string, boundingBox?: { x: number; y: number; width: number; height: number } | null): ElementTarget;
 }
 
 // ── Configuration ──────────────────────────────────────────────────

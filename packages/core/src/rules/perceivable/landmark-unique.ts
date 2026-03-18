@@ -100,20 +100,14 @@ export const landmarkUnique: Rule = {
             message: landmark.name === ''
               ? `Multiple "${role}" landmarks exist but this one has no accessible name. Add a unique aria-label or aria-labelledby.`
               : `Multiple "${role}" landmarks share the name "${landmark.name}". Each must have a unique accessible name.`,
-            element: {
-              selector: landmark.selector,
-              html: landmark.html,
-            },
+            element: { selector: landmark.selector, html: landmark.html },
           });
         } else {
           results.push({
             ruleId: 'landmark-unique',
             type: 'pass',
             message: `Landmark "${role}" has a unique accessible name "${landmark.name}".`,
-            element: {
-              selector: landmark.selector,
-              html: landmark.html,
-            },
+            element: { selector: landmark.selector, html: landmark.html },
           });
         }
       }

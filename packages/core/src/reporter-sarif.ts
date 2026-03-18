@@ -106,12 +106,17 @@ function buildSarifResult(
   };
 
   if (result.element) {
+    const displaySelector = result.element.cssSelector || result.element.selector;
+    const messageParts = [result.element.html];
+    if (result.element.accessibleName) {
+      messageParts.push(`Accessible name: "${result.element.accessibleName}"`);
+    }
     sarifResult.locations = [
       {
         logicalLocations: [
-          { fullyQualifiedName: result.element.selector },
+          { fullyQualifiedName: displaySelector },
         ],
-        message: { text: result.element.html },
+        message: { text: messageParts.join(' | ') },
       },
     ];
   }

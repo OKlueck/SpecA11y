@@ -34,22 +34,14 @@ export const labelContentNameMismatch: Rule = {
           ruleId: 'label-content-name-mismatch',
           type: 'pass',
           message: 'Accessible name contains the visible text content.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'label-content-name-mismatch',
           type: 'violation',
           message: `Visible text "${textContent.trim()}" is not part of the accessible name "${ariaLabel.trim()}". The accessible name must contain the visible text for speech input users.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

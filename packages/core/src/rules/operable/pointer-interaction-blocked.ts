@@ -39,11 +39,7 @@ export const pointerInteractionBlocked: Rule = {
             type: 'violation',
             message:
               'Content area has pointer-events: none, which prevents mouse and touch interaction with interactive elements inside it.',
-            element: {
-              selector: el.selector,
-              html: await el.getOuterHTML(),
-              boundingBox: await el.getBoundingBox(),
-            },
+            element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
           });
           foundPointerBlock = true;
         }
@@ -54,11 +50,7 @@ export const pointerInteractionBlocked: Rule = {
           ruleId: 'pointer-interaction-blocked',
           type: 'warning',
           message: 'Content area has cursor: none, which hides the mouse pointer from users.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
         foundCursorHide = true;
       }

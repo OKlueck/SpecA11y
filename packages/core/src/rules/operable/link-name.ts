@@ -23,22 +23,14 @@ export const linkName: Rule = {
           ruleId: 'link-name',
           type: 'pass',
           message: 'Link has accessible name.',
-          element: {
-            selector: link.selector,
-            html: await link.getOuterHTML(),
-            boundingBox: await link.getBoundingBox(),
-          },
+          element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'link-name',
           type: 'violation',
           message: 'Link has no discernible text. Add text content, aria-label, or aria-labelledby.',
-          element: {
-            selector: link.selector,
-            html: await link.getOuterHTML(),
-            boundingBox: await link.getBoundingBox(),
-          },
+          element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
         });
       }
     }

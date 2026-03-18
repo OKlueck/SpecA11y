@@ -64,11 +64,7 @@ export const focusVisibleContrast: Rule = {
           type: 'warning',
           message:
             'Focus outline color is transparent. The focus indicator will not be visible.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
         continue;
       }

@@ -51,23 +51,28 @@ export const textSpacing: Rule = {
           // Skip invisible elements
           if (style.display === 'none' || style.visibility === 'hidden') continue;
 
-          // Skip elements with no text
+          // Skip elements with very little text (avoid noise from icons, single chars)
           const text = el.textContent?.trim();
-          if (!text || text.length < 2) continue;
+          if (!text || text.length < 10) continue;
 
           const tag = el.tagName.toLowerCase();
           if (tag === 'script' || tag === 'style' || tag === 'noscript') continue;
 
-          const scrollOverflowX = el.scrollWidth > el.clientWidth + 1;
-          const scrollOverflowY = el.scrollHeight > el.clientHeight + 1;
+          // Use a tolerance of 5px or 2% of container width to account for
+          // scrollbar widths and sub-pixel rounding
+          const tolX = Math.max(5, el.clientWidth * 0.02);
+          const tolY = Math.max(5, el.clientHeight * 0.02);
+          const scrollOverflowX = el.scrollWidth > el.clientWidth + tolX;
+          const scrollOverflowY = el.scrollHeight > el.clientHeight + tolY;
 
           // Only flag if overflow is hidden (text gets clipped)
           const clipsX = scrollOverflowX && (style.overflowX === 'hidden' || style.overflowX === 'clip');
           const clipsY = scrollOverflowY && (style.overflowY === 'hidden' || style.overflowY === 'clip');
 
-          // Also check for explicit height constraints
-          const hasFixedHeight = style.height !== 'auto' && style.height !== '' &&
-            !style.height.endsWith('%') && style.maxHeight !== 'none';
+          // Also check for explicit height constraints (fixed height OR max-height)
+          const hasFixedHeight =
+            (style.height !== 'auto' && style.height !== '' && !style.height.endsWith('%')) ||
+            (style.maxHeight !== 'none' && style.maxHeight !== '');
 
           if (clipsX || (clipsY && hasFixedHeight)) {
             const id = el.id ? `#${el.id}` : '';

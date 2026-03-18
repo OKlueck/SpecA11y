@@ -40,22 +40,14 @@ export const linkInTextBlock: Rule = {
           ruleId: 'link-in-text-block',
           type: 'pass',
           message: 'Link in text block is visually distinguishable by more than color.',
-          element: {
-            selector: link.selector,
-            html: await link.getOuterHTML(),
-            boundingBox: await link.getBoundingBox(),
-          },
+          element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'link-in-text-block',
           type: 'violation',
           message: 'Link in text block may only be distinguishable by color. Add underline, border, font-weight change, or other visual indicator.',
-          element: {
-            selector: link.selector,
-            html: await link.getOuterHTML(),
-            boundingBox: await link.getBoundingBox(),
-          },
+          element: link.toTarget(await link.getOuterHTML(), await link.getBoundingBox()),
         });
       }
     }

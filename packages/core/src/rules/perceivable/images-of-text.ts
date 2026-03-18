@@ -91,11 +91,7 @@ export const imagesOfText: Rule = {
           ruleId: 'images-of-text',
           type: 'warning',
           message: warnings.join(' '),
-          element: {
-            selector: img.selector,
-            html: await img.getOuterHTML(),
-            boundingBox: await img.getBoundingBox(),
-          },
+          element: img.toTarget(await img.getOuterHTML(), await img.getBoundingBox()),
         });
       }
     }

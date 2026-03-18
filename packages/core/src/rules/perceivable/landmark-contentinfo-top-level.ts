@@ -27,22 +27,14 @@ export const landmarkContentinfoTopLevel: Rule = {
           ruleId: 'landmark-contentinfo-top-level',
           type: 'violation',
           message: 'Contentinfo landmark is nested inside another landmark. <footer> or [role="contentinfo"] must be a top-level landmark.',
-          element: {
-            selector: footer.selector,
-            html: outerHTML,
-            boundingBox: await footer.getBoundingBox(),
-          },
+          element: footer.toTarget(outerHTML, await footer.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'landmark-contentinfo-top-level',
           type: 'pass',
           message: 'Contentinfo landmark is at the top level.',
-          element: {
-            selector: footer.selector,
-            html: outerHTML,
-            boundingBox: await footer.getBoundingBox(),
-          },
+          element: footer.toTarget(outerHTML, await footer.getBoundingBox()),
         });
       }
     }

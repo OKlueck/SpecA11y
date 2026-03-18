@@ -33,11 +33,7 @@ export const ariaText: Rule = {
           type: 'violation',
           message:
             'Element with role="text" contains focusable children. Focusable elements inside role="text" break the grouping semantics.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       } else {
         results.push({
@@ -45,11 +41,7 @@ export const ariaText: Rule = {
           type: 'pass',
           message:
             'Element with role="text" does not contain focusable children.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       }
     }

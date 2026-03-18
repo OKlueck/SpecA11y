@@ -56,11 +56,7 @@ export const region: Rule = {
           ruleId: 'region',
           type: 'pass',
           message: 'Element is a landmark region.',
-          element: {
-            selector: child.selector,
-            html: outerHTML.substring(0, 200),
-            boundingBox: await child.getBoundingBox(),
-          },
+          element: child.toTarget(outerHTML.substring(0, 200), await child.getBoundingBox()),
         });
       } else {
         const textContent = await child.getTextContent();
@@ -70,11 +66,7 @@ export const region: Rule = {
           ruleId: 'region',
           type: 'violation',
           message: `Element <${tag}> is not contained within a landmark region. Wrap page content in appropriate landmarks (header, nav, main, footer, etc.).`,
-          element: {
-            selector: child.selector,
-            html: outerHTML.substring(0, 200),
-            boundingBox: await child.getBoundingBox(),
-          },
+          element: child.toTarget(outerHTML.substring(0, 200), await child.getBoundingBox()),
         });
       }
     }

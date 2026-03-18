@@ -36,22 +36,14 @@ export const dlitem: Rule = {
           ruleId: 'dlitem',
           type: 'violation',
           message: `<${tagName}> is not a direct child of a <dl> or a <div> inside a <dl>.`,
-          element: {
-            selector: item.selector,
-            html: await item.getOuterHTML(),
-            boundingBox: await item.getBoundingBox(),
-          },
+          element: item.toTarget(await item.getOuterHTML(), await item.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'dlitem',
           type: 'pass',
           message: `<${tagName}> is properly nested within a definition list.`,
-          element: {
-            selector: item.selector,
-            html: await item.getOuterHTML(),
-            boundingBox: await item.getBoundingBox(),
-          },
+          element: item.toTarget(await item.getOuterHTML(), await item.getBoundingBox()),
         });
       }
     }

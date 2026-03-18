@@ -38,11 +38,7 @@ export const labelTitleOnly: Rule = {
           ruleId: 'label-title-only',
           type: 'pass',
           message: 'Form element has a label beyond just the title attribute.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
         continue;
       }
@@ -55,11 +51,7 @@ export const labelTitleOnly: Rule = {
             ruleId: 'label-title-only',
             type: 'pass',
             message: 'Form element has a <label> element associated with it.',
-            element: {
-              selector: el.selector,
-              html: outerHTML,
-              boundingBox: await el.getBoundingBox(),
-            },
+            element: el.toTarget(outerHTML, await el.getBoundingBox()),
           });
           continue;
         }
@@ -71,11 +63,7 @@ export const labelTitleOnly: Rule = {
         type: 'violation',
         message:
           'Form element uses only the title attribute as its label. Provide a visible <label>, aria-label, or aria-labelledby for better accessibility.',
-        element: {
-          selector: el.selector,
-          html: outerHTML,
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(outerHTML, await el.getBoundingBox()),
       });
     }
 

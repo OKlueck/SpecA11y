@@ -26,22 +26,14 @@ export const hiddenAttributeOverride: Rule = {
           message:
             `Element has the HTML hidden attribute but its computed display is "${display}". ` +
             `CSS is overriding the semantic hidden state, creating a mismatch between DOM semantics and visual presentation.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'hidden-attribute-override',
           type: 'pass',
           message: 'Element with hidden attribute is correctly hidden (display: none).',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

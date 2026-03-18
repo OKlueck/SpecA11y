@@ -50,22 +50,14 @@ export const ariaHiddenContent: Rule = {
             `Element with aria-hidden="true" contains significant visible content ` +
             `(${contentInfo.textLength} chars of text, ${contentInfo.interactiveCount} interactive elements, ` +
             `${contentInfo.imgCount} images). This hides content from assistive technologies.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-hidden-content',
           type: 'pass',
           message: 'Element with aria-hidden="true" does not contain significant visible content.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

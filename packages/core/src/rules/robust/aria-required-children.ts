@@ -69,22 +69,14 @@ export const ariaRequiredChildren: Rule = {
           ruleId: 'aria-required-children',
           type: 'violation',
           message: `Element with role="${roleName}" must contain at least one child with role: ${requiredChildRoles.join(', ')}.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-required-children',
           type: 'pass',
           message: `Element with role="${roleName}" has required child roles.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

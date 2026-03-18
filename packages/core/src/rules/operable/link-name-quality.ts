@@ -60,11 +60,7 @@ export const linkNameQuality: Rule = {
       // Skip empty names (caught by link-name rule)
       if (!trimmed) continue;
 
-      const element = {
-        selector: link.selector,
-        html: await link.getOuterHTML(),
-        boundingBox: await link.getBoundingBox(),
-      };
+      const element = link.toTarget(await link.getOuterHTML(), await link.getBoundingBox());
 
       const isGeneric = GENERIC_LINK_PATTERNS.some((p) => p.test(trimmed));
       if (isGeneric) {

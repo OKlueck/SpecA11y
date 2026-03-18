@@ -24,11 +24,7 @@ export const hiddenContent: Rule = {
         ruleId: 'hidden-content',
         type: 'incomplete',
         message: 'Element is hidden but contains text content. Verify that this content does not need to be accessible to users.',
-        element: {
-          selector: el.selector,
-          html: await el.getOuterHTML().then(h => h.substring(0, 200)),
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(await el.getOuterHTML().then(h => h.substring(0, 200)), await el.getBoundingBox()),
       });
     }
 
@@ -49,11 +45,7 @@ export const hiddenContent: Rule = {
         ruleId: 'hidden-content',
         type: 'incomplete',
         message: 'Element is hidden via inline CSS but contains text content. Verify that this content does not need to be accessible to users.',
-        element: {
-          selector: el.selector,
-          html: await el.getOuterHTML().then(h => h.substring(0, 200)),
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(await el.getOuterHTML().then(h => h.substring(0, 200)), await el.getBoundingBox()),
       });
     }
 

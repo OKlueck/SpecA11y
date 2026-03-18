@@ -59,30 +59,21 @@ export const consistentNavigation: Rule = {
           ruleId: 'consistent-navigation',
           type: 'pass',
           message: 'Navigation element uses a consistent list-based structure with links.',
-          element: {
-            selector: nav.selector,
-            html: await nav.getOuterHTML(),
-          },
+          element: nav.toTarget(await nav.getOuterHTML()),
         });
       } else if (structureInfo.hasLinks && !structureInfo.hasListStructure) {
         results.push({
           ruleId: 'consistent-navigation',
           type: 'warning',
           message: 'Navigation element contains links but does not use a list structure (ul/ol with li > a). Using lists provides better structure for assistive technologies.',
-          element: {
-            selector: nav.selector,
-            html: await nav.getOuterHTML(),
-          },
+          element: nav.toTarget(await nav.getOuterHTML()),
         });
       } else {
         results.push({
           ruleId: 'consistent-navigation',
           type: 'warning',
           message: 'Navigation element does not contain a recognizable navigation structure. Use a list of links (ul/ol with li > a) for consistent navigation.',
-          element: {
-            selector: nav.selector,
-            html: await nav.getOuterHTML(),
-          },
+          element: nav.toTarget(await nav.getOuterHTML()),
         });
       }
     }

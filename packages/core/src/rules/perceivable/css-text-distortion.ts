@@ -73,11 +73,7 @@ export const cssTextDistortion: Rule = {
           ruleId: 'css-text-distortion',
           type: 'violation',
           message: `Text is distorted and unreadable via CSS: ${issue.detail}. This makes content inaccessible to sighted users.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

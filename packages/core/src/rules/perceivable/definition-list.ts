@@ -32,22 +32,14 @@ export const definitionList: Rule = {
           ruleId: 'definition-list',
           type: 'violation',
           message: `Definition list contains invalid direct children: <${invalidChildren.join('>, <')}>. Only <dt>, <dd>, <div>, <script>, and <template> are allowed.`,
-          element: {
-            selector: dl.selector,
-            html: await dl.getOuterHTML(),
-            boundingBox: await dl.getBoundingBox(),
-          },
+          element: dl.toTarget(await dl.getOuterHTML(), await dl.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'definition-list',
           type: 'pass',
           message: 'Definition list only contains allowed child elements.',
-          element: {
-            selector: dl.selector,
-            html: await dl.getOuterHTML(),
-            boundingBox: await dl.getBoundingBox(),
-          },
+          element: dl.toTarget(await dl.getOuterHTML(), await dl.getBoundingBox()),
         });
       }
     }

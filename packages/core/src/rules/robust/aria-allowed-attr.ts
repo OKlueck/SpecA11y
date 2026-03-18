@@ -44,11 +44,7 @@ export const ariaAllowedAttr: Rule = {
             ruleId: 'aria-allowed-attr',
             type: 'violation',
             message: `ARIA attribute "${attr}" is not allowed on role "${roleName}".`,
-            element: {
-              selector: el.selector,
-              html: await el.getOuterHTML(),
-              boundingBox: await el.getBoundingBox(),
-            },
+            element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
           });
         }
       }
@@ -58,11 +54,7 @@ export const ariaAllowedAttr: Rule = {
           ruleId: 'aria-allowed-attr',
           type: 'pass',
           message: `All ARIA attributes are allowed on role "${roleName}".`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }
@@ -114,10 +106,7 @@ export const ariaAllowedAttr: Rule = {
             ruleId: 'aria-allowed-attr',
             type: 'violation',
             message: `ARIA attribute "${attr}" is not allowed on implicit role "${implicitRole}" (from <${entry.tagName}>).`,
-            element: {
-              selector: entry.selector,
-              html: entry.html,
-            },
+            element: { selector: entry.selector, html: entry.html },
           });
         }
       }

@@ -4,6 +4,7 @@ export { parseColor, parseColorWithAlpha, alphaComposite, getEffectiveBackground
 export type { RGB, RGBA } from './color.js';
 
 export {
+  describeElementFn,
   getUniqueSelector,
   truncateHTML,
   INTERACTIVE_ELEMENTS,
@@ -27,6 +28,7 @@ export {
   rectArea,
   overlapArea,
   isOffscreen,
+  edgeDistance,
   distance,
 } from './geometry.js';
 export type { Rect } from './geometry.js';

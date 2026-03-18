@@ -20,11 +20,7 @@ export const serverSideImageMap: Rule = {
         ruleId: 'server-side-image-map',
         type: 'violation',
         message: 'Server-side image map detected. Use a client-side image map (<map> with <area>) instead for keyboard accessibility.',
-        element: {
-          selector: img.selector,
-          html: await img.getOuterHTML(),
-          boundingBox: await img.getBoundingBox(),
-        },
+        element: img.toTarget(await img.getOuterHTML(), await img.getBoundingBox()),
       });
     }
 

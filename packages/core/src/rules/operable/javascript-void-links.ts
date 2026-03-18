@@ -23,11 +23,7 @@ export const javascriptVoidLinks: Rule = {
         type: 'violation',
         message:
           'Link uses javascript: URI scheme. This is inaccessible — use a <button> for actions or a proper href for navigation.',
-        element: {
-          selector: el.selector,
-          html: await el.getOuterHTML(),
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
       });
     }
 
@@ -42,11 +38,7 @@ export const javascriptVoidLinks: Rule = {
           type: 'warning',
           message:
             'Link has href="#" without role="button". If this is an action, use a <button> or add role="button". If navigation, use a meaningful href.',
-          element: {
-            selector: el.selector,
-            html,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(html, await el.getBoundingBox()),
         });
       }
     }

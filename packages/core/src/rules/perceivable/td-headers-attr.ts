@@ -23,11 +23,7 @@ export const tdHeadersAttr: Rule = {
           ruleId: 'td-headers-attr',
           type: 'violation',
           message: 'Table cell has an empty headers attribute.',
-          element: {
-            selector: cell.selector,
-            html: await cell.getOuterHTML(),
-            boundingBox: await cell.getBoundingBox(),
-          },
+          element: cell.toTarget(await cell.getOuterHTML(), await cell.getBoundingBox()),
         });
         continue;
       }
@@ -57,22 +53,14 @@ export const tdHeadersAttr: Rule = {
           ruleId: 'td-headers-attr',
           type: 'violation',
           message: `Table cell references invalid header IDs: ${invalidIds.join(', ')}. Each ID must match a <th> in the same table.`,
-          element: {
-            selector: cell.selector,
-            html: await cell.getOuterHTML(),
-            boundingBox: await cell.getBoundingBox(),
-          },
+          element: cell.toTarget(await cell.getOuterHTML(), await cell.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'td-headers-attr',
           type: 'pass',
           message: 'Table cell headers attribute references valid th IDs.',
-          element: {
-            selector: cell.selector,
-            html: await cell.getOuterHTML(),
-            boundingBox: await cell.getBoundingBox(),
-          },
+          element: cell.toTarget(await cell.getOuterHTML(), await cell.getBoundingBox()),
         });
       }
     }

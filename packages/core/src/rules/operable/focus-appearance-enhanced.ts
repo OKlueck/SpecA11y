@@ -78,22 +78,14 @@ export const focusAppearanceEnhanced: Rule = {
             message: changedPixels === 0
               ? 'Element has no visible focus indicator. No visual change was detected on focus.'
               : `Focus indicator area (${changedPixels}px²) is below the minimum (${Math.round(minimumArea)}px²). The indicator should be at least a 2px border around the element.`,
-            element: {
-              selector: el.selector,
-              html: await el.getOuterHTML(),
-              boundingBox: box,
-            },
+            element: el.toTarget(await el.getOuterHTML(), box),
           });
         } else {
           results.push({
             ruleId: 'focus-appearance',
             type: 'pass',
             message: `Focus indicator area (${changedPixels}px²) meets the minimum (${Math.round(minimumArea)}px²).`,
-            element: {
-              selector: el.selector,
-              html: await el.getOuterHTML(),
-              boundingBox: box,
-            },
+            element: el.toTarget(await el.getOuterHTML(), box),
           });
         }
       } catch {

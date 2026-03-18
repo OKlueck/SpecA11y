@@ -63,7 +63,10 @@ export function formatText(report: Report, includePasses: boolean): string {
     for (const result of results) {
       lines.push(`  ${typeIcon(result.type)} ${result.message}`);
       if (result.element) {
-        lines.push(pc.dim(`    ${result.element.selector}`));
+        const displaySelector = result.element.cssSelector || result.element.selector;
+        const rolePart = result.element.role ? ` [${result.element.role}]` : '';
+        const namePart = result.element.accessibleName ? ` "${result.element.accessibleName}"` : '';
+        lines.push(pc.dim(`    ${displaySelector}${rolePart}${namePart}`));
       }
     }
     lines.push('');

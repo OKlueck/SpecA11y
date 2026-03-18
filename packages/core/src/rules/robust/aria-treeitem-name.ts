@@ -36,22 +36,14 @@ export const ariaTreeitemName: Rule = {
           type: 'violation',
           message:
             'Element with role="treeitem" must have an accessible name. Provide text content, aria-label, or aria-labelledby.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-treeitem-name',
           type: 'pass',
           message: 'Element with role="treeitem" has an accessible name.',
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       }
     }

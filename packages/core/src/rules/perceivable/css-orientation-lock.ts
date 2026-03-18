@@ -29,11 +29,7 @@ export const cssOrientationLock: Rule = {
           ruleId: 'css-orientation-lock',
           type: 'violation',
           message: `Inline style contains an orientation media query that may lock content to ${orientation === 'portrait' ? 'landscape' : 'portrait'} mode by hiding or transforming content in ${orientation} orientation.`,
-          element: {
-            selector: style.selector,
-            html: await style.getOuterHTML().then(h => h.substring(0, 200)),
-            boundingBox: await style.getBoundingBox(),
-          },
+          element: style.toTarget(await style.getOuterHTML().then(h => h.substring(0, 200)), await style.getBoundingBox()),
         });
       }
     }
@@ -51,11 +47,7 @@ export const cssOrientationLock: Rule = {
           ruleId: 'css-orientation-lock',
           type: 'incomplete',
           message: 'Element has a 90-degree rotation transform in inline styles. Verify this is not used to lock content orientation.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML().then(h => h.substring(0, 200)),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML().then(h => h.substring(0, 200)), await el.getBoundingBox()),
         });
       }
     }

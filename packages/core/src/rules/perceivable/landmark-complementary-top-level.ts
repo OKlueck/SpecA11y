@@ -27,22 +27,14 @@ export const landmarkComplementaryTopLevel: Rule = {
           ruleId: 'landmark-complementary-top-level',
           type: 'violation',
           message: 'Complementary landmark is nested inside another landmark. <aside> or [role="complementary"] must be a top-level landmark.',
-          element: {
-            selector: aside.selector,
-            html: outerHTML,
-            boundingBox: await aside.getBoundingBox(),
-          },
+          element: aside.toTarget(outerHTML, await aside.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'landmark-complementary-top-level',
           type: 'pass',
           message: 'Complementary landmark is at the top level.',
-          element: {
-            selector: aside.selector,
-            html: outerHTML,
-            boundingBox: await aside.getBoundingBox(),
-          },
+          element: aside.toTarget(outerHTML, await aside.getBoundingBox()),
         });
       }
     }

@@ -24,11 +24,7 @@ export const metaViewportLarge: Rule = {
           ruleId: 'meta-viewport-large',
           type: 'pass',
           message: 'Meta viewport has no content attribute restricting scale.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-            boundingBox: await meta.getBoundingBox(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
         });
         continue;
       }
@@ -44,22 +40,14 @@ export const metaViewportLarge: Rule = {
             ruleId: 'meta-viewport-large',
             type: 'violation',
             message: `Meta viewport sets maximum-scale=${maxScale}, which is below 5. Allow scaling to at least 500% for users who need significant magnification.`,
-            element: {
-              selector: meta.selector,
-              html: await meta.getOuterHTML(),
-              boundingBox: await meta.getBoundingBox(),
-            },
+            element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
           });
         } else {
           results.push({
             ruleId: 'meta-viewport-large',
             type: 'pass',
             message: `Meta viewport allows scaling to ${maxScale * 100}%.`,
-            element: {
-              selector: meta.selector,
-              html: await meta.getOuterHTML(),
-              boundingBox: await meta.getBoundingBox(),
-            },
+            element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
           });
         }
       } else {
@@ -67,11 +55,7 @@ export const metaViewportLarge: Rule = {
           ruleId: 'meta-viewport-large',
           type: 'pass',
           message: 'Meta viewport does not restrict maximum-scale.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-            boundingBox: await meta.getBoundingBox(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
         });
       }
     }

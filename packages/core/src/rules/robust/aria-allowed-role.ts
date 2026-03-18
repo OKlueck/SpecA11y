@@ -57,22 +57,14 @@ export const ariaAllowedRole: Rule = {
           ruleId: 'aria-allowed-role',
           type: 'violation',
           message: `The role "${primaryRole}" is not compatible with <${tag}>. This combination conflicts with the element's native semantics.`,
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-allowed-role',
           type: 'pass',
           message: `The role "${primaryRole}" is compatible with <${tag}>.`,
-          element: {
-            selector: el.selector,
-            html: outerHTML,
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(outerHTML, await el.getBoundingBox()),
         });
       }
     }

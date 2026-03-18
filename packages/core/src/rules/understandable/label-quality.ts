@@ -50,11 +50,7 @@ export const labelQuality: Rule = {
       // Skip elements without label (caught by label rule)
       if (!trimmed) continue;
 
-      const element = {
-        selector: el.selector,
-        html: await el.getOuterHTML(),
-        boundingBox: await el.getBoundingBox(),
-      };
+      const element = el.toTarget(await el.getOuterHTML(), await el.getBoundingBox());
 
       const isGeneric = GENERIC_LABEL_PATTERNS.some((p) => p.test(trimmed));
       if (isGeneric) {

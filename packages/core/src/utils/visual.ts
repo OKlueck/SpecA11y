@@ -30,6 +30,7 @@ export function decodePNG(buffer: Buffer): PixelData {
 
   let width = 0;
   let height = 0;
+  let colorType = 6;
   const idatChunks: Buffer[] = [];
   let offset = 8;
 
@@ -42,9 +43,9 @@ export function decodePNG(buffer: Buffer): PixelData {
       width = data.readUInt32BE(0);
       height = data.readUInt32BE(4);
       const bitDepth = data[8];
-      const colorType = data[9];
-      if (bitDepth !== 8 || colorType !== 6) {
-        throw new Error(`Unsupported PNG format: bitDepth=${bitDepth}, colorType=${colorType}. Only 8-bit RGBA supported.`);
+      colorType = data[9];
+      if (bitDepth !== 8 || (colorType !== 6 && colorType !== 2)) {
+        throw new Error(`Unsupported PNG format: bitDepth=${bitDepth}, colorType=${colorType}. Only 8-bit RGB/RGBA supported.`);
       }
     } else if (type === 'IDAT') {
       idatChunks.push(Buffer.from(data));
@@ -58,20 +59,22 @@ export function decodePNG(buffer: Buffer): PixelData {
   const compressed = Buffer.concat(idatChunks);
   const raw = inflateSync(compressed);
 
-  const bytesPerPixel = 4;
-  const stride = width * bytesPerPixel;
-  const pixels = new Uint8Array(width * height * bytesPerPixel);
+  // colorType 2 = RGB (3 bytes/pixel), colorType 6 = RGBA (4 bytes/pixel)
+  const srcBpp = colorType === 2 ? 3 : 4;
+  const srcStride = width * srcBpp;
+  // Decode filtered rows into source-format buffer first
+  const srcPixels = new Uint8Array(width * height * srcBpp);
 
   for (let y = 0; y < height; y++) {
-    const filterByte = raw[y * (stride + 1)];
-    const rowStart = y * (stride + 1) + 1;
-    const outRow = y * stride;
+    const filterByte = raw[y * (srcStride + 1)];
+    const rowStart = y * (srcStride + 1) + 1;
+    const outRow = y * srcStride;
 
-    for (let x = 0; x < stride; x++) {
+    for (let x = 0; x < srcStride; x++) {
       const curr = raw[rowStart + x];
-      const a = x >= bytesPerPixel ? pixels[outRow + x - bytesPerPixel] : 0;
-      const b = y > 0 ? pixels[outRow - stride + x] : 0;
-      const c = x >= bytesPerPixel && y > 0 ? pixels[outRow - stride + x - bytesPerPixel] : 0;
+      const a = x >= srcBpp ? srcPixels[outRow + x - srcBpp] : 0;
+      const b = y > 0 ? srcPixels[outRow - srcStride + x] : 0;
+      const c = x >= srcBpp && y > 0 ? srcPixels[outRow - srcStride + x - srcBpp] : 0;
 
       let val: number;
       switch (filterByte) {
@@ -82,8 +85,22 @@ export function decodePNG(buffer: Buffer): PixelData {
         case 4: val = (curr + paethPredictor(a, b, c)) & 0xff; break; // Paeth
         default: val = curr;
       }
-      pixels[outRow + x] = val;
+      srcPixels[outRow + x] = val;
     }
+  }
+
+  // Output is always RGBA (4 bytes/pixel)
+  if (srcBpp === 4) {
+    return { width, height, data: srcPixels };
+  }
+
+  // Convert RGB → RGBA
+  const pixels = new Uint8Array(width * height * 4);
+  for (let i = 0, j = 0; i < srcPixels.length; i += 3, j += 4) {
+    pixels[j] = srcPixels[i];
+    pixels[j + 1] = srcPixels[i + 1];
+    pixels[j + 2] = srcPixels[i + 2];
+    pixels[j + 3] = 255; // fully opaque
   }
 
   return { width, height, data: pixels };

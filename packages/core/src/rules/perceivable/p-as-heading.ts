@@ -52,11 +52,7 @@ export const pAsHeading: Rule = {
           ruleId: 'p-as-heading',
           type: 'violation',
           message: `Paragraph appears to be styled as a heading (font-size: ${fontSize}px, font-weight: ${fontWeight}, text length: ${trimmedText.length} chars). Use a proper heading element (h1-h6) instead.`,
-          element: {
-            selector: p.selector,
-            html: await p.getOuterHTML(),
-            boundingBox: await p.getBoundingBox(),
-          },
+          element: p.toTarget(await p.getOuterHTML(), await p.getBoundingBox()),
         });
       }
     }

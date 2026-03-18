@@ -23,11 +23,7 @@ export const metaViewport: Rule = {
           ruleId: 'meta-viewport',
           type: 'pass',
           message: 'Meta viewport has no content attribute.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-            boundingBox: await meta.getBoundingBox(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
         });
         continue;
       }
@@ -49,22 +45,14 @@ export const metaViewport: Rule = {
           ruleId: 'meta-viewport',
           type: 'violation',
           message: `Meta viewport disables user scaling with ${violations.join(' and ')}. Users must be able to zoom.`,
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-            boundingBox: await meta.getBoundingBox(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'meta-viewport',
           type: 'pass',
           message: 'Meta viewport does not restrict user scaling.',
-          element: {
-            selector: meta.selector,
-            html: await meta.getOuterHTML(),
-            boundingBox: await meta.getBoundingBox(),
-          },
+          element: meta.toTarget(await meta.getOuterHTML(), await meta.getBoundingBox()),
         });
       }
     }

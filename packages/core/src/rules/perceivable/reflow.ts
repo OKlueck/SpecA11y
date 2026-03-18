@@ -1,29 +1,34 @@
+import type { Page } from 'playwright';
 import type { Rule, RuleResult } from '../../types.js';
 
 const MIN_VIEWPORT_WIDTH = 320;
+const MAX_OFFENDERS = 10;
+const TOLERANCE = 5;
 
 export const reflow: Rule = {
   meta: {
     id: 'reflow',
     name: 'Content must reflow without horizontal scrolling at 320px width',
     description:
-      'Checks for elements that would likely cause horizontal scrolling at a 320px viewport width, including fixed-width elements and restrictive viewport meta tags.',
+      'Resizes the viewport to 320px and checks for elements that cause horizontal scrolling (WCAG 1.4.10 Reflow).',
     wcagCriteria: ['1.4.10'],
     severity: 'serious',
     confidence: 'likely',
-    type: 'dom',
+    type: 'interactive',
   },
 
   async run(context): Promise<RuleResult[]> {
     const results: RuleResult[] = [];
+    const page = context.page as Page;
 
     // Check viewport meta for fixed width
-    const viewportMetas = await context.querySelectorAll('meta[name="viewport"]');
-    for (const meta of viewportMetas) {
-      const content = await meta.getAttribute('content');
-      if (!content) continue;
+    const viewportContent = await page.evaluate(() => {
+      const meta = document.querySelector('meta[name="viewport"]');
+      return meta ? meta.getAttribute('content') : null;
+    });
 
-      const widthMatch = content.match(/width\s*=\s*(\d+)/);
+    if (viewportContent) {
+      const widthMatch = viewportContent.match(/width\s*=\s*(\d+)/);
       if (widthMatch) {
         const fixedWidth = parseInt(widthMatch[1], 10);
         if (fixedWidth > MIN_VIEWPORT_WIDTH) {
@@ -32,102 +37,121 @@ export const reflow: Rule = {
             type: 'warning',
             message: `Viewport meta sets a fixed width of ${fixedWidth}px, which exceeds ${MIN_VIEWPORT_WIDTH}px and may prevent content from reflowing properly.`,
             element: {
-              selector: meta.selector,
-              html: await meta.getOuterHTML(),
-              boundingBox: await meta.getBoundingBox(),
+              selector: 'meta[name="viewport"]',
+              html: `<meta name="viewport" content="${viewportContent}">`,
             },
           });
         }
       }
     }
 
-    // Check for elements with fixed widths exceeding 320px
-    const wideElements = await context.evaluate(() => {
-      const out: {
-        selector: string;
-        html: string;
-        issue: string;
-        width: number;
-      }[] = [];
+    // Perform actual viewport resize to 320px
+    const original = page.viewportSize();
+    try {
+      await page.setViewportSize({ width: MIN_VIEWPORT_WIDTH, height: original?.height ?? 768 });
+      // Wait for reflow
+      await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
 
-      const allElements = document.querySelectorAll('body *');
+      // Find elements that extend beyond 320px viewport
+      const offenders = await page.evaluate((tolerance: number) => {
+        const viewportWidth = document.documentElement.clientWidth;
 
-      allElements.forEach((el) => {
-        const style = window.getComputedStyle(el);
-        const tag = el.tagName.toLowerCase();
+        const found: Array<{
+          cssSelector: string;
+          accessibleName: string;
+          role: string;
+          html: string;
+          width: number;
+        }> = [];
 
-        // Skip hidden elements
-        if (style.display === 'none' || style.visibility === 'hidden') return;
-        // Skip script/style
-        if (tag === 'script' || tag === 'style' || tag === 'noscript' || tag === 'meta' || tag === 'link') return;
-
-        const id = el.id ? `#${el.id}` : '';
-        const cls =
-          el.className && typeof el.className === 'string'
-            ? `.${el.className.trim().split(/\s+/).join('.')}`
-            : '';
-        const selector = `${tag}${id}${cls}`;
-
-        // Check inline width styles
-        const inlineWidth = el.getAttribute('style');
-        if (inlineWidth) {
-          const match = inlineWidth.match(/(?:^|;)\s*(?:min-)?width\s*:\s*(\d+)px/);
-          if (match) {
-            const px = parseInt(match[1], 10);
-            if (px > 320) {
-              out.push({
-                selector,
-                html: el.outerHTML.slice(0, 200),
-                issue: `Inline style sets width to ${px}px.`,
-                width: px,
-              });
-              return;
+        // Always search for elements extending beyond viewport — even if
+        // scrollWidth is clipped (overflow:hidden on body/html),
+        // elements that are wider than the viewport fail reflow.
+        function cssPath(node: Element): string {
+          const parts: string[] = [];
+          let current: Element | null = node;
+          for (let depth = 0; depth < 3 && current && current !== document.body && current !== document.documentElement; depth++) {
+            const tag = current.tagName.toLowerCase();
+            if (current.id) { parts.unshift(tag + '#' + current.id); break; }
+            const cls = current.className && typeof current.className === 'string'
+              ? '.' + current.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+            const parent = current.parentElement;
+            let nth = '';
+            if (parent) {
+              const siblings = parent.children;
+              let sameTag = 0, idx = 0;
+              for (let i = 0; i < siblings.length; i++) {
+                if (siblings[i].tagName === current.tagName) {
+                  sameTag++;
+                  if (siblings[i] === current) idx = sameTag;
+                }
+              }
+              if (sameTag > 1) nth = ':nth-of-type(' + idx + ')';
             }
+            parts.unshift(tag + cls + nth);
+            current = parent;
           }
+          return parts.join(' > ');
         }
 
-        // Check computed min-width
-        const minWidth = parseFloat(style.minWidth);
-        if (!isNaN(minWidth) && minWidth > 320) {
-          out.push({
-            selector,
-            html: el.outerHTML.slice(0, 200),
-            issue: `Computed min-width is ${Math.round(minWidth)}px.`,
-            width: minWidth,
-          });
-          return;
-        }
+        const IMPLICIT_ROLES: Record<string, string> = {
+          nav: 'navigation', main: 'main', header: 'banner', footer: 'contentinfo',
+          table: 'table', img: 'img', form: 'form',
+        };
 
-        // Check for elements with overflow that could cause scrolling
-        const scrollWidth = el.scrollWidth;
-        const clientWidth = el.clientWidth;
-        if (scrollWidth > 320 && scrollWidth > clientWidth + 10 && style.overflowX !== 'hidden' && style.overflowX !== 'auto' && style.overflowX !== 'scroll') {
-          // Only flag if the element itself is wide and not handling overflow
+        const allElements = document.querySelectorAll('body *');
+        for (const el of allElements) {
+          if (found.length >= 10) break;
+          const tag = el.tagName.toLowerCase();
+          if (tag === 'script' || tag === 'style' || tag === 'noscript' || tag === 'meta' || tag === 'link') continue;
+          const style = window.getComputedStyle(el);
+          if (style.display === 'none' || style.visibility === 'hidden') continue;
+
           const rect = el.getBoundingClientRect();
-          if (rect.width > 320) {
-            out.push({
-              selector,
+          if (rect.right > viewportWidth + tolerance) {
+            let accNameStr = '';
+            const label = el.getAttribute('aria-label');
+            if (label) accNameStr = label.trim().slice(0, 50);
+            else {
+              let text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+              if (text.length > 50) text = text.slice(0, 47) + '...';
+              accNameStr = text;
+            }
+
+            found.push({
+              cssSelector: cssPath(el),
+              accessibleName: accNameStr,
+              role: el.getAttribute('role') || IMPLICIT_ROLES[tag] || '',
               html: el.outerHTML.slice(0, 200),
-              issue: `Element is ${Math.round(rect.width)}px wide and may cause horizontal scrolling.`,
-              width: rect.width,
+              width: Math.round(rect.width),
             });
           }
         }
-      });
 
-      return out;
-    });
+        return found;
+      }, TOLERANCE);
 
-    for (const el of wideElements) {
-      results.push({
-        ruleId: 'reflow',
-        type: 'warning',
-        message: `${el.issue} Content should reflow to fit a ${MIN_VIEWPORT_WIDTH}px viewport without horizontal scrolling.`,
-        element: {
-          selector: el.selector,
-          html: el.html,
-        },
-      });
+      if (offenders.length > 0) {
+        for (const el of offenders.slice(0, MAX_OFFENDERS)) {
+          results.push({
+            ruleId: 'reflow',
+            type: 'violation',
+            message: `Element extends beyond 320px viewport (width: ${el.width}px). Content must reflow without horizontal scrolling.`,
+            element: {
+              selector: el.cssSelector,
+              cssSelector: el.cssSelector,
+              accessibleName: el.accessibleName,
+              role: el.role,
+              html: el.html,
+            },
+          });
+        }
+      }
+    } finally {
+      // Always restore original viewport
+      if (original) {
+        await page.setViewportSize(original);
+      }
     }
 
     return results;

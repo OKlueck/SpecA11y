@@ -20,11 +20,7 @@ export const marquee: Rule = {
         ruleId: 'marquee',
         type: 'violation',
         message: '<marquee> element is deprecated and not accessible. Use CSS animations with a pause mechanism instead.',
-        element: {
-          selector: el.selector,
-          html: await el.getOuterHTML(),
-          boundingBox: await el.getBoundingBox(),
-        },
+        element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
       });
     }
 

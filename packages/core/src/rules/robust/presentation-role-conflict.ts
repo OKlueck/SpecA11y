@@ -58,22 +58,14 @@ export const presentationRoleConflict: Rule = {
           ruleId: 'presentation-role-conflict',
           type: 'violation',
           message: `Element with role="${role}" has conflicting attributes: ${conflicts.join(', ')}. These attributes override or conflict with the presentation role.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'presentation-role-conflict',
           type: 'pass',
           message: `Element with role="${role}" has no conflicting ARIA attributes or tabindex.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

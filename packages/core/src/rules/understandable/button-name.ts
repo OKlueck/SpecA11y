@@ -49,22 +49,14 @@ export const buttonName: Rule = {
           ruleId: 'button-name',
           type: 'pass',
           message: 'Button has an accessible name.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'button-name',
           type: 'violation',
           message: 'Button does not have an accessible name. Add text content, aria-label, aria-labelledby, title, or value.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

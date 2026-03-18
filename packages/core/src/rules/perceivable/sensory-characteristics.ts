@@ -63,10 +63,7 @@ export const sensoryCharacteristics: Rule = {
           ruleId: 'sensory-characteristics',
           type: 'warning',
           message: `Text may rely on sensory characteristics: "${match[0]}". Ensure instructions do not depend solely on shape, color, size, or visual location.`,
-          element: {
-            selector: node.selector,
-            html: node.html,
-          },
+          element: { selector: node.selector, html: node.html },
         });
       }
     }

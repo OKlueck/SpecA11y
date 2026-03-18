@@ -24,22 +24,14 @@ export const tabindex: Rule = {
           ruleId: 'tabindex',
           type: 'violation',
           message: `Element has tabindex="${value}". Positive tabindex values disrupt the natural focus order.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'tabindex',
           type: 'pass',
           message: `Element has tabindex="${value}", which does not disrupt focus order.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

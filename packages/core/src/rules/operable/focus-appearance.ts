@@ -29,11 +29,7 @@ export const focusAppearance: Rule = {
           ruleId: 'focus-appearance',
           type: 'warning',
           message: 'Element has no outline and may lack a visible focus indicator. Ensure focus is indicated via border, box-shadow, or background change.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

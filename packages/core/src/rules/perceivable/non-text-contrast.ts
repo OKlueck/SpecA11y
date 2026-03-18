@@ -94,22 +94,14 @@ export const nonTextContrast: Rule = {
             ruleId: 'non-text-contrast',
             type: 'violation',
             message: `UI component border contrast is ${ratio.toFixed(2)}:1, below the 3:1 requirement.`,
-            element: {
-              selector: el.selector,
-              html: await el.getOuterHTML(),
-              boundingBox: box,
-            },
+            element: el.toTarget(await el.getOuterHTML(), box),
           });
         } else {
           results.push({
             ruleId: 'non-text-contrast',
             type: 'pass',
             message: `UI component border contrast is ${ratio.toFixed(2)}:1.`,
-            element: {
-              selector: el.selector,
-              html: await el.getOuterHTML(),
-              boundingBox: box,
-            },
+            element: el.toTarget(await el.getOuterHTML(), box),
           });
         }
       } catch {

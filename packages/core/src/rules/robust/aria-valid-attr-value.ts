@@ -82,10 +82,7 @@ export const ariaValidAttrValue: Rule = {
             ruleId: 'aria-valid-attr-value',
             type: 'violation',
             message: `ARIA attribute "${attr.name}" has an invalid value: "${attr.value}".`,
-            element: {
-              selector: entry.selector,
-              html: entry.html,
-            },
+            element: { selector: entry.selector, html: entry.html },
           });
         }
       }

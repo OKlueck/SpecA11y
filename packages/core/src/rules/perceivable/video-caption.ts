@@ -26,22 +26,14 @@ export const videoCaption: Rule = {
           ruleId: 'video-caption',
           type: 'pass',
           message: 'Video element has a captions track.',
-          element: {
-            selector: video.selector,
-            html: await video.getOuterHTML(),
-            boundingBox: await video.getBoundingBox(),
-          },
+          element: video.toTarget(await video.getOuterHTML(), await video.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'video-caption',
           type: 'violation',
           message: 'Video element is missing captions. Add a <track kind="captions"> element.',
-          element: {
-            selector: video.selector,
-            html: await video.getOuterHTML(),
-            boundingBox: await video.getBoundingBox(),
-          },
+          element: video.toTarget(await video.getOuterHTML(), await video.getBoundingBox()),
         });
       }
     }

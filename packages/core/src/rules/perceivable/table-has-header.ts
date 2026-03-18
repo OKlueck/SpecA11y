@@ -53,22 +53,14 @@ export const tableHasHeader: Rule = {
           ruleId: 'table-has-header',
           type: 'violation',
           message: 'Data table does not have any header cells (<th>, role="columnheader", or role="rowheader").',
-          element: {
-            selector: table.selector,
-            html: await table.getOuterHTML(),
-            boundingBox: await table.getBoundingBox(),
-          },
+          element: table.toTarget(await table.getOuterHTML(), await table.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'table-has-header',
           type: 'pass',
           message: 'Data table has header cells.',
-          element: {
-            selector: table.selector,
-            html: await table.getOuterHTML(),
-            boundingBox: await table.getBoundingBox(),
-          },
+          element: table.toTarget(await table.getOuterHTML(), await table.getBoundingBox()),
         });
       }
     }

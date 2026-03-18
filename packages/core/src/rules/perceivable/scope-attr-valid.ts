@@ -26,22 +26,14 @@ export const scopeAttrValid: Rule = {
           ruleId: 'scope-attr-valid',
           type: 'violation',
           message: `<th> has an invalid scope value "${scopeValue}". Allowed values are: row, col, rowgroup, colgroup, or empty string.`,
-          element: {
-            selector: header.selector,
-            html: await header.getOuterHTML(),
-            boundingBox: await header.getBoundingBox(),
-          },
+          element: header.toTarget(await header.getOuterHTML(), await header.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'scope-attr-valid',
           type: 'pass',
           message: 'Scope attribute has a valid value.',
-          element: {
-            selector: header.selector,
-            html: await header.getOuterHTML(),
-            boundingBox: await header.getBoundingBox(),
-          },
+          element: header.toTarget(await header.getOuterHTML(), await header.getBoundingBox()),
         });
       }
     }

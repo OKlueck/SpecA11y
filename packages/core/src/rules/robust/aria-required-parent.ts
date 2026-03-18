@@ -62,22 +62,14 @@ export const ariaRequiredParent: Rule = {
           ruleId: 'aria-required-parent',
           type: 'violation',
           message: `Element with role="${roleName}" must be contained in an element with role: ${requiredParentRoles.join(', ')}.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'aria-required-parent',
           type: 'pass',
           message: `Element with role="${roleName}" is correctly nested in a required parent role.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

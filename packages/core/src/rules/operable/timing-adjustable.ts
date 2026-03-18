@@ -29,10 +29,7 @@ export const timingAdjustable: Rule = {
             ruleId: 'timing-adjustable',
             type: 'warning',
             message: `Page has meta refresh with a ${delay}-second delay. Ensure users can extend, adjust, or disable this time limit.`,
-            element: {
-              selector: meta.selector,
-              html: await meta.getOuterHTML(),
-            },
+            element: meta.toTarget(await meta.getOuterHTML()),
           });
         }
       }
@@ -70,10 +67,7 @@ export const timingAdjustable: Rule = {
         ruleId: 'timing-adjustable',
         type: 'warning',
         message: `Inline script uses ${entry.timerType}. If this creates a time limit for users, ensure it can be turned off, adjusted, or extended.`,
-        element: {
-          selector: entry.selector,
-          html: entry.html,
-        },
+        element: { selector: entry.selector, html: entry.html },
       });
     }
 

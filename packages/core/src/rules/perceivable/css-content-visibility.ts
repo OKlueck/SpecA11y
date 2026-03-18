@@ -109,11 +109,7 @@ export const cssContentVisibility: Rule = {
           ruleId: 'css-content-visibility',
           type: 'violation',
           message: `Content is made invisible via CSS: ${issue.detail}. This hides content from sighted users while it may still appear in the DOM.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

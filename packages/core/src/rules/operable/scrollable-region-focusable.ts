@@ -73,11 +73,7 @@ export const scrollableRegionFocusable: Rule = {
           ruleId: 'scrollable-region-focusable',
           type: 'violation',
           message: 'Scrollable region is not keyboard accessible. Add tabindex="0" to allow keyboard users to scroll this content.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML().then(h => h.substring(0, 200)),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML().then(h => h.substring(0, 200)), await el.getBoundingBox()),
         });
       }
     }

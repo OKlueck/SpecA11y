@@ -67,11 +67,7 @@ export const imgAltQuality: Rule = {
       if (alt === '') continue;
 
       const trimmed = alt.trim();
-      const element = {
-        selector: img.selector,
-        html: await img.getOuterHTML(),
-        boundingBox: await img.getBoundingBox(),
-      };
+      const element = img.toTarget(await img.getOuterHTML(), await img.getBoundingBox());
 
       // Check generic placeholder patterns
       const isGeneric = GENERIC_ALT_PATTERNS.some((p) => p.test(trimmed));

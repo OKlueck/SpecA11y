@@ -57,11 +57,7 @@ export const colorContrast: Rule = {
           ruleId: 'color-contrast',
           type: 'violation',
           message: `Text has effective opacity of ${effectiveOpacity.toFixed(2)}, making it nearly invisible regardless of color contrast.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
         continue;
       }
@@ -73,11 +69,7 @@ export const colorContrast: Rule = {
           ruleId: 'color-contrast',
           type: 'violation',
           message: `Text has font-size of ${fontSize}, which is too small to be readable regardless of contrast ratio.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
         continue;
       }
@@ -98,11 +90,7 @@ export const colorContrast: Rule = {
           ruleId: 'color-contrast',
           type: 'incomplete',
           message: 'Unable to determine background color due to background-image (gradient or url).',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
         continue;
       }
@@ -125,22 +113,14 @@ export const colorContrast: Rule = {
           ruleId: 'color-contrast',
           type: 'pass',
           message: `Contrast ratio ${ratio.toFixed(2)}:1 meets ${requiredRatio}:1 requirement.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'color-contrast',
           type: 'violation',
           message: `Contrast ratio ${ratio.toFixed(2)}:1 is below the ${requiredRatio}:1 requirement for ${isLargeText ? 'large' : 'normal'} text.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

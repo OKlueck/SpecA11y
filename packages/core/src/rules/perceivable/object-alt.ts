@@ -29,22 +29,14 @@ export const objectAlt: Rule = {
           ruleId: 'object-alt',
           type: 'pass',
           message: 'Object element has alternative text.',
-          element: {
-            selector: obj.selector,
-            html: await obj.getOuterHTML(),
-            boundingBox: await obj.getBoundingBox(),
-          },
+          element: obj.toTarget(await obj.getOuterHTML(), await obj.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'object-alt',
           type: 'violation',
           message: 'Object element is missing alternative text. Add aria-label, aria-labelledby, or inner text.',
-          element: {
-            selector: obj.selector,
-            html: await obj.getOuterHTML(),
-            boundingBox: await obj.getBoundingBox(),
-          },
+          element: obj.toTarget(await obj.getOuterHTML(), await obj.getBoundingBox()),
         });
       }
     }

@@ -41,10 +41,7 @@ export const onFocus: Rule = {
         ruleId: 'on-focus',
         type: 'warning',
         message: `Element has an onfocus handler that may trigger a context change: "${el.handler.slice(0, 100)}". Receiving focus should not cause a change of context.`,
-        element: {
-          selector: el.selector,
-          html: el.html,
-        },
+        element: { selector: el.selector, html: el.html },
       });
     }
 

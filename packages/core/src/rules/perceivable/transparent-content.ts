@@ -110,11 +110,7 @@ export const transparentContent: Rule = {
           ruleId: 'transparent-content',
           type: 'violation',
           message: `Text is made invisible or unreadable via CSS: ${issue.detail}. This hides content from sighted users while it may still be in the DOM.`,
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

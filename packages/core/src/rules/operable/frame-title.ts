@@ -23,22 +23,14 @@ export const frameTitle: Rule = {
           ruleId: 'frame-title',
           type: 'pass',
           message: `Frame has title: "${title.trim()}"`,
-          element: {
-            selector: frame.selector,
-            html: await frame.getOuterHTML(),
-            boundingBox: await frame.getBoundingBox(),
-          },
+          element: frame.toTarget(await frame.getOuterHTML(), await frame.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'frame-title',
           type: 'violation',
           message: 'Frame element does not have a non-empty title attribute.',
-          element: {
-            selector: frame.selector,
-            html: await frame.getOuterHTML(),
-            boundingBox: await frame.getBoundingBox(),
-          },
+          element: frame.toTarget(await frame.getOuterHTML(), await frame.getBoundingBox()),
         });
       }
     }

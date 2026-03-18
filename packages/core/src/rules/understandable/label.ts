@@ -65,22 +65,14 @@ export const label: Rule = {
           ruleId: 'label',
           type: 'pass',
           message: 'Form element has an associated label.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'label',
           type: 'violation',
           message: 'Form element does not have an associated label. Add a <label>, aria-label, aria-labelledby, or title attribute.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

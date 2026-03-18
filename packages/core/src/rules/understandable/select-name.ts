@@ -53,22 +53,14 @@ export const selectName: Rule = {
           ruleId: 'select-name',
           type: 'pass',
           message: 'Select element has an accessible name.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'select-name',
           type: 'violation',
           message: 'Select element does not have an accessible name. Add a <label>, aria-label, or aria-labelledby.',
-          element: {
-            selector: el.selector,
-            html: await el.getOuterHTML(),
-            boundingBox: await el.getBoundingBox(),
-          },
+          element: el.toTarget(await el.getOuterHTML(), await el.getBoundingBox()),
         });
       }
     }

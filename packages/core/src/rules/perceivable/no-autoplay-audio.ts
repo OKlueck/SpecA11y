@@ -25,33 +25,21 @@ export const noAutoplayAudio: Rule = {
           ruleId: 'no-autoplay-audio',
           type: 'pass',
           message: 'Autoplaying media element is muted.',
-          element: {
-            selector: media.selector,
-            html: outerHTML,
-            boundingBox: await media.getBoundingBox(),
-          },
+          element: media.toTarget(outerHTML, await media.getBoundingBox()),
         });
       } else if (hasControls !== null) {
         results.push({
           ruleId: 'no-autoplay-audio',
           type: 'warning',
           message: 'Autoplaying media element is not muted but has controls. Users can stop or mute the audio, but autoplay without muting may still be disruptive.',
-          element: {
-            selector: media.selector,
-            html: outerHTML,
-            boundingBox: await media.getBoundingBox(),
-          },
+          element: media.toTarget(outerHTML, await media.getBoundingBox()),
         });
       } else {
         results.push({
           ruleId: 'no-autoplay-audio',
           type: 'violation',
           message: 'Autoplaying media element is not muted and has no controls. Add the muted attribute or provide controls so users can stop the audio.',
-          element: {
-            selector: media.selector,
-            html: outerHTML,
-            boundingBox: await media.getBoundingBox(),
-          },
+          element: media.toTarget(outerHTML, await media.getBoundingBox()),
         });
       }
     }

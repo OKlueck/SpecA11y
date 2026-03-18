@@ -48,10 +48,7 @@ export const accesskeys: Rule = {
             ruleId: 'accesskeys',
             type: 'violation',
             message: `Duplicate accesskey="${key}" found. accesskey values must be unique.`,
-            element: {
-              selector: entry.selector,
-              html: entry.html,
-            },
+            element: { selector: entry.selector, html: entry.html },
           });
         }
       } else {

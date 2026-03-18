@@ -27,11 +27,7 @@ export const imgAlt: Rule = {
           ruleId: 'img-alt',
           type: 'pass',
           message: 'Image is marked as decorative.',
-          element: {
-            selector: img.selector,
-            html: await img.getOuterHTML(),
-            boundingBox: await img.getBoundingBox(),
-          },
+          element: img.toTarget(await img.getOuterHTML(), await img.getBoundingBox()),
         });
         continue;
       }
@@ -47,22 +43,14 @@ export const imgAlt: Rule = {
             ruleId: 'img-alt',
             type: 'pass',
             message: 'Image has empty alt (treated as decorative). Consider adding role="none".',
-            element: {
-              selector: img.selector,
-              html: await img.getOuterHTML(),
-              boundingBox: await img.getBoundingBox(),
-            },
+            element: img.toTarget(await img.getOuterHTML(), await img.getBoundingBox()),
           });
         } else {
           results.push({
             ruleId: 'img-alt',
             type: 'pass',
             message: 'Image has alternative text.',
-            element: {
-              selector: img.selector,
-              html: await img.getOuterHTML(),
-              boundingBox: await img.getBoundingBox(),
-            },
+            element: img.toTarget(await img.getOuterHTML(), await img.getBoundingBox()),
           });
         }
       } else {
@@ -70,11 +58,7 @@ export const imgAlt: Rule = {
           ruleId: 'img-alt',
           type: 'violation',
           message: 'Image is missing alternative text. Add an alt attribute or aria-label.',
-          element: {
-            selector: img.selector,
-            html: await img.getOuterHTML(),
-            boundingBox: await img.getBoundingBox(),
-          },
+          element: img.toTarget(await img.getOuterHTML(), await img.getBoundingBox()),
         });
       }
     }
