@@ -1,5 +1,13 @@
 # n8n-nodes-speca11y
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [[`0b3b14d`](https://github.com/OKlueck/SpecA11y/commit/0b3b14d463ed3df203583c9aa57c371e5b7c1c61)]:
+  - @speca11y/core@0.4.0
+  - @speca11y/semantic@0.2.3
+
 ## 0.1.4
 
 ### Patch Changes
