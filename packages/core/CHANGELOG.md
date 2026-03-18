@@ -1,5 +1,18 @@
 # @speca11y/core
 
+## 0.4.0
+
+### Minor Changes
+
+- [`0b3b14d`](https://github.com/OKlueck/SpecA11y/commit/0b3b14d463ed3df203583c9aa57c371e5b7c1c61) - Improve element identification, reduce false positives, and add real viewport testing
+
+  - Enrich element output with CSS selectors, accessible names, and ARIA roles
+  - Rewrite focus-visible rule with screenshot-based focus indicator detection
+  - Rewrite reflow rule with real viewport resize to 320px
+  - Reduce false positives in keyboard-trap, text-spacing, and target-size rules
+  - Add WCAG 2.5.8 spacing exception and inline-link exception to target-size
+  - Fix PNG decoder to support RGB format
+
 ## 0.3.1
 
 ### Patch Changes
