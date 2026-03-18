@@ -5,13 +5,17 @@ import { pathToFileURL } from 'url';
 import { formatText } from './formatters/text.js';
 import { formatJson } from './formatters/json.js';
 import { formatSarif } from './formatters/sarif.js';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json');
 
 const program = new Command();
 
 program
   .name('speca11y')
   .description('SpecA11y — automated WCAG accessibility checker')
-  .version('0.1.0')
+  .version(version)
   .argument('<url-or-file>', 'URL or local HTML file to check')
   .option('-l, --level <level>', 'WCAG level: A, AA, or AAA', 'AA')
   .option('-f, --format <format>', 'Output format: text, json, or sarif', 'text')
