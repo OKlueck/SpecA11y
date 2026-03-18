@@ -1,6 +1,6 @@
 # @speca11y/semantic
 
-## 0.2.3
+## 0.2.4
 
 ### Patch Changes
 
