@@ -20,6 +20,7 @@
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "node ../../scripts/lint-typescript.mjs src",
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {

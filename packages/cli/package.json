@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsup",
     "test": "pnpm build && node ../../scripts/check-package-surface.mjs .",
+    "lint": "node ../../scripts/lint-typescript.mjs src",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {

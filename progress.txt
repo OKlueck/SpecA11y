@@ -1,1 +1,3 @@
 Issue #8: Fixed @speca11y/cli package surface by removing missing CJS entrypoint from main/exports, added package-surface smoke check for main/module/types/exports/bin plus bin executability, wired it into CLI test. Tests: pnpm --filter @speca11y/cli test; pnpm build; pnpm test all passed.
+
+Issue #9: Added a TypeScript-aware workspace lint task via scripts/lint-typescript.mjs, wired package lint scripts so pnpm lint runs 4 real Turbo tasks, and covered representative no-debugger failure behavior. Tests: node --test scripts/lint-typescript.test.mjs; pnpm lint; pnpm build; pnpm test all passed.

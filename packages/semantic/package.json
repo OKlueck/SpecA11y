@@ -19,6 +19,7 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
+    "lint": "node ../../scripts/lint-typescript.mjs src",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
