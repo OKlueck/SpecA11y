@@ -174,24 +174,31 @@ export function createRuleContext(pageOrFrame: Page | Frame, options?: ContextOp
     async querySelectorAll(selector: string): Promise<ElementHandle[]> {
       // When include selectors are specified, scope queries to those containers
       if (include.length > 0) {
-        const handles: ElementHandle[] = [];
+        const handles: PlaywrightElementHandle[] = [];
         for (const incSel of include) {
           // Match elements inside include containers, plus the container itself if it matches
-          const scopedLocators = await pageOrFrame.locator(`${incSel} ${selector}`).all();
-          for (let i = 0; i < scopedLocators.length; i++) {
-            handles.push(new PlaywrightElementHandle(scopedLocators[i], `${incSel} ${selector} >> nth=${i}`));
-          }
+          const scopedSelector = `${incSel} ${selector}`;
+          const scopedLocators = await pageOrFrame.locator(scopedSelector).all();
+          const scopedHandles = scopedLocators.map(
+            (loc, i) => new PlaywrightElementHandle(loc, `${scopedSelector} >> nth=${i}`),
+          );
+          await batchEnrich(pageOrFrame, scopedSelector, scopedHandles);
+          handles.push(...scopedHandles);
+
           // Also check if the include container itself matches the selector
           const selfLocators = await pageOrFrame.locator(incSel).all();
+          const selfHandles: PlaywrightElementHandle[] = [];
           for (let i = 0; i < selfLocators.length; i++) {
             const matches = await selfLocators[i].evaluate(
               (el, sel) => el.matches(sel),
               selector,
             );
             if (matches) {
-              handles.push(new PlaywrightElementHandle(selfLocators[i], `${incSel} >> nth=${i}`));
+              selfHandles.push(new PlaywrightElementHandle(selfLocators[i], `${incSel} >> nth=${i}`));
             }
           }
+          await batchEnrich(pageOrFrame, incSel, selfHandles);
+          handles.push(...selfHandles);
         }
 
         if (exclude.length > 0) {

@@ -88,7 +88,7 @@ export interface CheckConfig {
   level: WcagLevel;
   /** WCAG versions to include */
   versions: WcagVersion[];
-  /** Rule IDs to explicitly enable (overrides level filter) */
+  /** Rule IDs to explicitly enable (adds rules even when level/version filters would exclude them) */
   enableRules?: string[];
   /** Rule IDs to disable */
   disableRules?: string[];

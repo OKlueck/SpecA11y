@@ -150,60 +150,64 @@ export class WcagCheck implements INodeType {
     const items = this.getInputData();
     const returnData: INodeExecutionData[] = [];
 
-    for (let i = 0; i < items.length; i++) {
-      const operation = this.getNodeParameter('operation', i) as string;
-      const level = this.getNodeParameter('level', i) as 'A' | 'AA' | 'AAA';
-      const includePasses = this.getNodeParameter('includePasses', i) as boolean;
-      const disableRulesStr = this.getNodeParameter('disableRules', i, '') as string;
-      const disableRules = disableRulesStr
-        ? disableRulesStr.split(',').map(s => s.trim()).filter(Boolean)
-        : undefined;
-      const enableSemantic = this.getNodeParameter('enableSemantic', i, false) as boolean;
+    const { chromium } = await import('playwright');
+    const { check } = await import('@speca11y/core');
+    const browser = await chromium.launch({ headless: true });
 
-      const { chromium } = await import('playwright');
-      const browser = await chromium.launch({ headless: true });
-      const page = await browser.newPage();
+    try {
+      for (let i = 0; i < items.length; i++) {
+        const operation = this.getNodeParameter('operation', i) as string;
+        const level = this.getNodeParameter('level', i) as 'A' | 'AA' | 'AAA';
+        const includePasses = this.getNodeParameter('includePasses', i) as boolean;
+        const disableRulesStr = this.getNodeParameter('disableRules', i, '') as string;
+        const disableRules = disableRulesStr
+          ? disableRulesStr.split(',').map(s => s.trim()).filter(Boolean)
+          : undefined;
+        const enableSemantic = this.getNodeParameter('enableSemantic', i, false) as boolean;
+        const page = await browser.newPage();
 
-      try {
-        if (operation === 'checkUrl') {
-          const url = this.getNodeParameter('url', i) as string;
-          await page.goto(url, { waitUntil: 'networkidle' });
-        } else {
-          const html = this.getNodeParameter('html', i) as string;
-          await page.setContent(html, { waitUntil: 'networkidle' });
-        }
+        try {
+          if (operation === 'checkUrl') {
+            const url = this.getNodeParameter('url', i) as string;
+            await page.goto(url, { waitUntil: 'networkidle' });
+          } else {
+            const html = this.getNodeParameter('html', i) as string;
+            await page.setContent(html, { waitUntil: 'networkidle' });
+          }
 
-        const { check } = await import('@speca11y/core');
-        const report = await check(page, {
-          level,
-          includePasses,
-          disableRules,
-        });
-
-        if (enableSemantic) {
-          const { enrich } = await import('@speca11y/semantic');
-          const llmProvider = this.getNodeParameter('llmProvider', i, 'anthropic') as string;
-          const llmModel = this.getNodeParameter('llmModel', i, '') as string;
-          const llmApiKey = this.getNodeParameter('llmApiKey', i, '') as string;
-          const ollamaBaseUrl = this.getNodeParameter('ollamaBaseUrl', i, 'http://localhost:11434') as string;
-
-          const enrichedReport = await enrich(report, {
-            provider: {
-              provider: llmProvider as 'anthropic' | 'openai' | 'ollama',
-              model: llmModel || undefined,
-              apiKey: llmApiKey || undefined,
-              baseUrl: llmProvider === 'ollama' ? ollamaBaseUrl : undefined,
-            },
-            page,
+          const report = await check(page, {
+            level,
+            includePasses,
+            disableRules,
           });
 
-          returnData.push({ json: enrichedReport as unknown as INodeExecutionData['json'] });
-        } else {
-          returnData.push({ json: report as unknown as INodeExecutionData['json'] });
+          if (enableSemantic) {
+            const { enrich } = await import('@speca11y/semantic');
+            const llmProvider = this.getNodeParameter('llmProvider', i, 'anthropic') as string;
+            const llmModel = this.getNodeParameter('llmModel', i, '') as string;
+            const llmApiKey = this.getNodeParameter('llmApiKey', i, '') as string;
+            const ollamaBaseUrl = this.getNodeParameter('ollamaBaseUrl', i, 'http://localhost:11434') as string;
+
+            const enrichedReport = await enrich(report, {
+              provider: {
+                provider: llmProvider as 'anthropic' | 'openai' | 'ollama',
+                model: llmModel || undefined,
+                apiKey: llmApiKey || undefined,
+                baseUrl: llmProvider === 'ollama' ? ollamaBaseUrl : undefined,
+              },
+              page,
+            });
+
+            returnData.push({ json: enrichedReport as unknown as INodeExecutionData['json'] });
+          } else {
+            returnData.push({ json: report as unknown as INodeExecutionData['json'] });
+          }
+        } finally {
+          await page.close();
         }
-      } finally {
-        await browser.close();
       }
+    } finally {
+      await browser.close();
     }
 
     return [returnData];

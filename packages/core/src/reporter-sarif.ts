@@ -1,4 +1,5 @@
-import type { Report, ReportEntry, RuleResult, RuleMeta } from './types.js';
+import packageJson from '../package.json' with { type: 'json' };
+import type { Report, RuleResult, RuleMeta } from './types.js';
 import { WCAG_CRITERIA } from './wcag.js';
 
 // ── SARIF 2.1.0 Types (subset) ──────────────────────────────────────
@@ -37,6 +38,26 @@ interface SarifToolDriver {
   informationUri: string;
   rules: SarifReportingDescriptor[];
 }
+
+interface PackageJsonMetadata {
+  version: string;
+  repository?: { url?: string };
+}
+
+const packageMetadata = packageJson as PackageJsonMetadata;
+
+function repositoryUrlToInformationUri(url: string | undefined): string {
+  if (!url) return 'https://github.com/OKlueck/SpecA11y';
+  return url
+    .replace(/^git\+/, '')
+    .replace(/\.git$/, '');
+}
+
+const SARIF_TOOL_METADATA = {
+  name: 'SpecA11y',
+  version: packageMetadata.version,
+  informationUri: repositoryUrlToInformationUri(packageMetadata.repository?.url),
+};
 
 interface SarifRun {
   tool: { driver: SarifToolDriver };
@@ -150,9 +171,7 @@ export function buildSarifReport(report: Report): SarifLog {
       {
         tool: {
           driver: {
-            name: 'speca11y',
-            version: '0.1.0',
-            informationUri: 'https://github.com/speca11y/speca11y',
+            ...SARIF_TOOL_METADATA,
             rules,
           },
         },

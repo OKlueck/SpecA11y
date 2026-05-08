@@ -62,4 +62,54 @@ describe('registry', () => {
     expect(ids).not.toContain('r1');
     expect(ids).toContain('r2');
   });
+
+  it('treats enableRules as additive over level and version filters', () => {
+    registerRule(createMockRule({ id: 'matching-rule', wcagCriteria: ['1.1.1'] }));
+    registerRule(createMockRule({ id: 'aaa-rule', wcagCriteria: ['2.4.13'] }));
+    registerRule(createMockRule({ id: 'wcag-22-rule', wcagCriteria: ['2.4.11'] }));
+    registerRule(createMockRule({ id: 'unmatched-rule', wcagCriteria: ['1.4.3'] }));
+
+    const config: CheckConfig = {
+      level: 'A',
+      versions: ['2.0'],
+      enableRules: ['aaa-rule', 'wcag-22-rule'],
+    };
+    const ids = filterRules(config).map(r => r.meta.id);
+
+    expect(ids).toContain('matching-rule');
+    expect(ids).toContain('aaa-rule');
+    expect(ids).toContain('wcag-22-rule');
+    expect(ids).not.toContain('unmatched-rule');
+  });
+
+  it('keeps disabled rules excluded even when explicitly enabled', () => {
+    registerRule(createMockRule({ id: 'conflicting-rule', wcagCriteria: ['1.1.1'] }));
+
+    const config: CheckConfig = {
+      level: 'A',
+      versions: ['2.0'],
+      enableRules: ['conflicting-rule'],
+      disableRules: ['conflicting-rule'],
+    };
+
+    expect(filterRules(config).map(r => r.meta.id)).not.toContain('conflicting-rule');
+  });
+
+  it('keeps rules without WCAG criteria opt-in through explicit enablement or tags', () => {
+    registerRule(createMockRule({ id: 'untagged-draft-rule', wcagCriteria: [] }));
+    registerRule(createMockRule({ id: 'tagged-draft-rule', wcagCriteria: [], tags: ['wcag3'] }));
+    registerRule(createMockRule({ id: 'enabled-draft-rule', wcagCriteria: [] }));
+
+    const config: CheckConfig = {
+      level: 'AAA',
+      versions: ['2.0', '2.1', '2.2', '3.0'],
+      enableRules: ['enabled-draft-rule'],
+      tags: ['wcag3'],
+    };
+    const ids = filterRules(config).map(r => r.meta.id);
+
+    expect(ids).not.toContain('untagged-draft-rule');
+    expect(ids).toContain('tagged-draft-rule');
+    expect(ids).toContain('enabled-draft-rule');
+  });
 });
