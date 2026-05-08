@@ -1,5 +1,15 @@
 # n8n-nodes-speca11y
 
+## 0.1.8
+
+### Patch Changes
+
+- [#24](https://github.com/OKlueck/SpecA11y/pull/24) [`08fc542`](https://github.com/OKlueck/SpecA11y/commit/08fc542cfc4c46717c295f14ca24f1f5028ed0f8) Thanks [@OKlueck](https://github.com/OKlueck)! - Fix AFK issue slices for workspace linting, rule filtering, SARIF metadata, include-scoped enrichment, CLI option validation, and n8n browser lifecycle handling.
+
+- Updated dependencies [[`08fc542`](https://github.com/OKlueck/SpecA11y/commit/08fc542cfc4c46717c295f14ca24f1f5028ed0f8)]:
+  - @speca11y/core@0.5.2
+  - @speca11y/semantic@0.2.6
+
 ## 0.1.7
 
 ### Patch Changes
