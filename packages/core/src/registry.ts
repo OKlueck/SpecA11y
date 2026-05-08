@@ -46,7 +46,7 @@ export function filterRules(config: CheckConfig): Rule[] {
       return false;
     }
 
-    if (enabledSet && !enabledSet.has(rule.meta.id)) return true; // enableRules adds, doesn't restrict
+    if (enabledSet?.has(rule.meta.id)) return true; // enableRules adds to level/version matches
 
     // Check if at least one criterion matches the level & version filter
     const matchesCriteria = rule.meta.wcagCriteria.some(critId => {
