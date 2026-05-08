@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "pnpm build && node ../../scripts/check-package-surface.mjs .",
+    "test": "pnpm build && node --test __tests__/*.test.mjs && node ../../scripts/check-package-surface.mjs .",
     "lint": "node ../../scripts/lint-typescript.mjs src",
     "clean": "rm -rf dist .turbo"
   },

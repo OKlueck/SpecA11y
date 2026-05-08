@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { pathToFileURL } from 'url';
@@ -17,14 +17,22 @@ program
   .description('SpecA11y — automated WCAG accessibility checker')
   .version(version)
   .argument('<url-or-file>', 'URL or local HTML file to check')
-  .option('-l, --level <level>', 'WCAG level: A, AA, or AAA', 'AA')
-  .option('-f, --format <format>', 'Output format: text, json, or sarif', 'text')
+  .addOption(new Option('-l, --level <level>', 'WCAG level: A, AA, or AAA').choices(['A', 'AA', 'AAA']).default('AA'))
+  .addOption(
+    new Option('-f, --format <format>', 'Output format: text, json, or sarif')
+      .choices(['text', 'json', 'sarif'])
+      .default('text'),
+  )
   .option('--include-passes', 'Include passing rules in output', false)
   .option('--disable-rules <ids>', 'Comma-separated rule IDs to disable')
   .option('-o, --output <file>', 'Write output to file instead of stdout')
   // Semantic analysis options
   .option('--semantic', 'Enable LLM-based semantic quality analysis', false)
-  .option('--llm-provider <provider>', 'LLM provider: anthropic, openai, or ollama', 'anthropic')
+  .addOption(
+    new Option('--llm-provider <provider>', 'LLM provider: anthropic, openai, or ollama')
+      .choices(['anthropic', 'openai', 'ollama'])
+      .default('anthropic'),
+  )
   .option('--llm-model <model>', 'LLM model (leave blank for provider default)')
   .option('--llm-api-key <key>', 'API key (or set ANTHROPIC_API_KEY / OPENAI_API_KEY env var)')
   .option('--ollama-url <url>', 'Ollama base URL', 'http://localhost:11434')
