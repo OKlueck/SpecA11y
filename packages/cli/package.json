@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "CLI for SpecA11y - automated WCAG accessibility checker",
   "type": "module",
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -12,8 +12,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -21,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "pnpm build && node ../../scripts/check-package-surface.mjs .",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
