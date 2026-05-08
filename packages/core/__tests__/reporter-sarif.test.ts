@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import corePackage from '../package.json' with { type: 'json' };
 import { buildSarifReport } from '../src/reporter-sarif.js';
 import type { Report } from '../src/types.js';
 
@@ -69,7 +70,7 @@ describe('buildSarifReport', () => {
     expect(sarif.version).toBe('2.1.0');
     expect(run.tool.driver).toMatchObject({
       name: 'SpecA11y',
-      version: '0.5.0',
+      version: corePackage.version,
       informationUri: 'https://github.com/OKlueck/SpecA11y',
     });
     expect(run.automationDetails?.id).toBe('speca11y/https://example.com/page/2026-05-08T00:00:00.000Z');
