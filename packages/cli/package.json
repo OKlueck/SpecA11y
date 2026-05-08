@@ -1,6 +1,6 @@
 {
   "name": "@speca11y/cli",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "CLI for SpecA11y - automated WCAG accessibility checker",
   "type": "module",
   "main": "./dist/index.js",
