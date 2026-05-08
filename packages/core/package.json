@@ -2,6 +2,11 @@
   "name": "@speca11y/core",
   "version": "0.5.0",
   "description": "Automated WCAG accessibility checker powered by Playwright",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OKlueck/SpecA11y.git",
+    "directory": "packages/core"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
