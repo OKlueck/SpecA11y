@@ -1,5 +1,15 @@
 # @speca11y/cli
 
+## 0.5.1
+
+### Patch Changes
+
+- [#17](https://github.com/OKlueck/SpecA11y/pull/17) [`9bbfb39`](https://github.com/OKlueck/SpecA11y/commit/9bbfb398fab95f7df4c59cb505e1a2644acc2318) Thanks [@OKlueck](https://github.com/OKlueck)! - Fix AFK issue slices for workspace linting, rule filtering, SARIF metadata, include-scoped enrichment, CLI option validation, and n8n browser lifecycle handling.
+
+- Updated dependencies [[`9bbfb39`](https://github.com/OKlueck/SpecA11y/commit/9bbfb398fab95f7df4c59cb505e1a2644acc2318)]:
+  - @speca11y/core@0.5.1
+  - @speca11y/semantic@0.2.5
+
 ## 0.5.0
 
 ### Minor Changes
