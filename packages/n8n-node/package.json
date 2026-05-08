@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "vitest run",
     "lint": "node ../../scripts/lint-typescript.mjs src",
     "clean": "rm -rf dist .turbo"
   },
@@ -39,7 +40,8 @@
     "n8n-workflow": "^2.13.0",
     "playwright": "^1.58.2",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   },
   "license": "MIT"
 }

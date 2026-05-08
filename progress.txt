@@ -9,3 +9,5 @@ Issue #11: Updated SARIF tool metadata to use SpecA11y identity with version/rep
 Issue #12: Preserved rule-context enrichment for include-scoped query results by applying existing css selector/accessibility-role enrichment to scoped and self-matching include handles, with coverage for include plus exclude filtering. Tests: pnpm --filter @speca11y/core test -- context.test.ts; pnpm --filter @speca11y/core build; pnpm --filter @speca11y/core lint all passed.
 
 Issue #14: Added Commander choice validation for WCAG level, output format, and LLM provider, plus CLI validation tests covering invalid choices and --version. Tests: pnpm --filter @speca11y/cli test; pnpm --filter @speca11y/cli lint; pnpm --filter @speca11y/cli build all passed.
+
+Issue #13: Refactored n8n node execution to launch one browser per node execution while creating/closing a fresh page per input item, with mocked Vitest lifecycle coverage wired into the package test task. Tests: pnpm --filter n8n-nodes-speca11y test; pnpm --filter n8n-nodes-speca11y lint; pnpm --filter n8n-nodes-speca11y build; pnpm test all passed.
